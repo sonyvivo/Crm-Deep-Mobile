@@ -45,4 +45,12 @@ export class PinModalComponent {
     this.pin = '';
     this.error = '';
   }
+
+  forgotPin() {
+    // Reset PIN to default '1234'
+    localStorage.setItem('appPin', '1234');
+    this.error = '';
+    alert('PIN has been reset to default: 1234');
+    this.pin = '';
+  }
 }

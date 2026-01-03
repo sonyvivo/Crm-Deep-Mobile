@@ -12,8 +12,10 @@
             </div>
             <div *ngIf="error" style="color: var(--danger); font-weight: bold;">{{ error }}</div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="flex-direction: column; gap: 10px;">
             <button class="btn btn-primary" style="width: 100%;" (click)="verify()">Unlock</button>
+            <button class="btn btn-link" style="font-size: 0.85rem; color: #888;" (click)="forgotPin()">Forgot PIN?
+                Reset to default</button>
         </div>
     </div>
 </div>
