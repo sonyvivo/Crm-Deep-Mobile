@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 import authRoutes from './routes/auth.routes.js';
 import customersRoutes from './routes/customers.routes.js';
@@ -17,6 +19,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security Headers
+app.use(helmet());
+
+// Rate Limiting - Brute Force Protection
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 login requests per windowMs
+    message: { success: false, error: 'Too many login attempts, please try again after 15 minutes' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 // Middleware - Allow all origins for cross-device access
 app.use(cors({
     origin: '*',
@@ -25,6 +46,11 @@ app.use(cors({
     credentials: false
 }));
 app.use(express.json());
+
+// Apply rate limiting
+app.use('/api/', apiLimiter);
+app.use('/api/auth/login', loginLimiter);
+app.use('/api/auth/reset-password', loginLimiter); // Protect reset password too
 
 // Routes
 app.use('/api/auth', authRoutes);
