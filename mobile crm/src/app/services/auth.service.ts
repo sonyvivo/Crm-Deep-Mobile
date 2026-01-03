@@ -196,6 +196,9 @@ export class AuthService {
   }
 
   verifyPin(pin: string): boolean {
+    // Always read from localStorage to get the latest PIN
+    const savedPin = localStorage.getItem('appPin') || '1234';
+    this.currentPin = savedPin;
     return pin === this.currentPin;
   }
 
