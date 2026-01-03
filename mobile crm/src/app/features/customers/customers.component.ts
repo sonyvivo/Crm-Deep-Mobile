@@ -72,7 +72,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
 
   applyFilter() {
     if (!this.searchQuery) {
-      this.filteredCustomers = [...this.customers].reverse(); // Show recent first
+      this.filteredCustomers = [...this.customers]; // Backend already sorts by DESC
     } else {
       const q = this.searchQuery.toLowerCase();
       this.filteredCustomers = this.customers.filter(c =>
