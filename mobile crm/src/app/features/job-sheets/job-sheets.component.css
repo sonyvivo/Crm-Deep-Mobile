@@ -1,0 +1,1053 @@
+/* Header Styles for Full Page View */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    color: var(--dark-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header h1 i {
+    color: var(--primary);
+}
+
+.quick-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.form-body {
+    padding: 32px;
+    background: #f1f5f9;
+}
+
+.card-footer {
+    background: white;
+    padding: 24px 32px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+/* Modern Job Sheet UI - Revamped */
+
+:host {
+    display: block;
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+    --secondary-gradient: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --surface-color: #f8fafc;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- List View Refinements --- */
+.card {
+    border: none;
+    box-shadow: var(--card-shadow);
+    border-radius: 16px;
+    background: white;
+    overflow: hidden;
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-controls {
+    padding: 20px 24px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.table th {
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    background: #f8fafc;
+    border: none;
+    padding: 16px;
+}
+
+.table td {
+    padding: 16px;
+    vertical-align: middle;
+    border-top: 1px solid #f1f5f9;
+}
+
+.table th.text-center,
+.table td.text-center {
+    text-align: center !important;
+}
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+/* --- Fullscreen Animated Modal --- */
+
+/* --- Form Sections --- */
+.form-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+@media (max-width: 992px) {
+    .form-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-section {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 0;
+    box-shadow: var(--card-shadow);
+    border: 1px solid white;
+    height: fit-content;
+}
+
+.form-section:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 1.25rem;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.section-header i {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+
+/* --- Colorful Inputs --- */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    font-weight: 500;
+    color: #334155;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    background: white;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* --- Checkbox Grid --- */
+.checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.job-checkbox {
+    padding: 16px;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.job-checkbox:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.job-checkbox.checked {
+    border-color: #6366f1;
+    background: #eef2ff;
+    color: #4338ca;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+}
+
+.job-checkbox input {
+    accent-color: #4f46e5;
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Pattern Lock --- */
+.pattern-container {
+    background: #1e293b;
+    padding: 32px;
+    border-radius: 24px;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pattern-dot.active {
+    background: #38bdf8;
+    box-shadow: 0 0 20px #38bdf8;
+}
+
+/* --- Footer --- */
+/* Broken footer styles removed */
+/* .footer {
+    background: white;
+    padding: 24px 32px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+} */
+
+.btn {
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+
+.btn-success {
+    background: var(--success-gradient);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.btn-info {
+    background: var(--info-gradient);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
+}
+
+.btn-danger {
+    background: var(--danger-gradient);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+}
+
+.btn-secondary {
+    background: var(--secondary-gradient);
+    color: white;
+}
+
+.btn:hover {
+    filter: brightness(110%);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+
+
+/* Financials Highlight */
+.financial-card {
+    background: linear-gradient(135deg, #fffbeb 0%, #fff1f2 100%);
+    border: 2px solid #fed7aa;
+}
+
+.financial-card .section-header i {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+    box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.3);
+}
+
+.pending-amount-display {
+    color: #ef4444;
+    font-size: 2rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 0px rgba(239, 68, 68, 0.1);
+}
+
+/* --- List View Refinements --- */
+.card {
+    border: none;
+    box-shadow: var(--shadow-sm);
+    border-radius: 12px;
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 0;
+}
+
+.filter-controls {
+    padding: 15px 25px;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+    gap: 15px;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border-top: none;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* --- Modal & Form Modernization --- */
+/* Broken modal styles removed */
+/* .fullscreen-modal {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none;
+    box-shadow: none;
+    overflow: hidden;
+} */
+
+/* Broken styles removed */
+/* .broken-selector-1 {
+    background: var(--primary);
+    color: white;
+    padding: 20px 30px;
+    border-bottom: none;
+} */
+
+/* Broken styles removed */
+/* .broken-selector-2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.4rem;
+} */
+
+/* Broken styles removed */
+/* .broken-selector-3 {
+    color: rgba(255, 255, 255, 0.8);
+} */
+
+/* Broken styles removed */
+/* Form Sections as Cards */
+.form-section {
+    background: white;
+    margin: 20px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--primary-soft);
+    padding-bottom: 10px;
+}
+
+.section-header i {
+    color: var(--primary);
+    background: var(--primary-soft);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Modern Inputs */
+.form-group label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+}
+
+.job-checkbox input:checked+span {
+    color: var(--primary-dark);
+}
+
+.job-checkbox.checked {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.job-checkbox input {
+    accent-color: var(--primary);
+}
+
+/* Pattern Grid Enhanced */
+.pattern-container {
+    background: #2c3e50;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 10px;
+}
+
+.pattern-dot {
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+}
+
+.pattern-dot::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+}
+
+.pattern-dot:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.pattern-dot.active {
+    background: #00d2ff;
+    box-shadow: 0 0 15px #00d2ff;
+}
+
+/* Action Bar Footer */
+/* Broken styles removed */
+/* .action-bar {
+    background: white;
+    padding: 15px 30px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+} */
+
+.btn-lg-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+/* Financials Highlight */
+.financial-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+.pending-amount-display {
+    font-size: 1.5rem;
+    color: var(--danger);
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+/* --- PRINT STYLES --- */
+#jobSheetPreview {
+    display: none;
+    /* Hidden by default in list/edit mode */
+}
+
+/* When in preview mode, show it */
+:host ::ng-deep .card#jobSheetPreview {
+    display: block;
+}
+
+.job-sheet-print {
+    padding: 20px;
+    background: white;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    color: #000;
+}
+
+.print-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #000;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.shop-details h2 {
+    margin: 0 0 5px 0;
+    color: #4f46e5;
+    font-size: 24px;
+}
+
+.shop-details p {
+    margin: 2px 0;
+    font-size: 14px;
+}
+
+.job-details {
+    text-align: right;
+}
+
+.job-details h3 {
+    margin: 0;
+    font-size: 24px;
+    color: #000;
+}
+
+.ticket-id {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.print-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.print-col {
+    flex: 1;
+}
+
+.print-col h4 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #444;
+}
+
+.print-col p {
+    margin: 5px 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.condition-list {
+    margin: 5px 0;
+    padding-left: 20px;
+    font-size: 14px;
+}
+
+.financial-section {
+    margin-top: 30px;
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+}
+
+.financial-table {
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+}
+
+.financial-table td {
+    padding: 5px 0;
+    font-size: 15px;
+}
+
+.financial-table td:last-child {
+    text-align: right;
+    font-weight: bold;
+}
+
+.total-row td {
+    border-top: 1px solid #000;
+    padding-top: 10px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.print-footer {
+    margin-top: 40px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+.terms {
+    margin-bottom: 40px;
+}
+
+.terms h5 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.terms p {
+    margin: 2px 0;
+    font-size: 12px;
+    color: #666;
+}
+
+.signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+.sig-box {
+    border-top: 1px solid #000;
+    width: 200px;
+    text-align: center;
+    padding-top: 5px;
+    font-size: 14px;
+}
+
+.thank-you {
+    text-align: center;
+    margin-top: 30px;
+    font-style: italic;
+    font-weight: bold;
+}
+
+@media print {
+    :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+    }
+
+    .no-print,
+    .filter-controls,
+    .table-responsive,
+    app-header,
+    app-sidebar {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card-header.no-print {
+        display: none !important;
+    }
+
+    /* Force the print section to show */
+    #jobSheetPreview {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .job-sheet-print {
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    /* Ensure text colors are black */
+    * {
+        color: black !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .shop-details h2 {
+        color: black !important;
+    }
+}
+
+/* Status Select Dropdown */
+/* Status Select Dropdown */
+.status-select {
+    padding: 6px 8px;
+    /* Slightly more padding */
+    font-size: 0.75rem;
+    /* Slightly larger font */
+    font-weight: 700;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    text-align-last: center;
+    width: 160px;
+    /* Increased width */
+    height: 36px;
+    /* Increased height */
+    line-height: normal;
+    /* Check if normal works better, or match height */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin: 0 auto;
+    color: #fff;
+    box-shadow: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Remove hover animations */
+.status-select:hover {
+    opacity: 0.9;
+    transform: none;
+    filter: none;
+}
+
+.status-select:focus {
+    outline: none;
+}
+
+/* Flat Colors */
+.status-pending {
+    background-color: #ffc107;
+    color: #000;
+}
+
+/* Yellow with black text */
+.status-diagnosing {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.status-approval {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.status-ready {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-delivered {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-cancelled {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Customer Search Results */
+.customer-search-container {
+    position: relative;
+    width: 100%;
+}
+
+.customer-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: 5px;
+}
+
+.customer-result {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.customer-result:last-child {
+    border-bottom: none;
+}
+
+.customer-result:hover {
+    background-color: #f8f9fa;
+}
+
+.customer-result strong {
+    color: var(--primary);
+}
+
+/* Fix for Checkbox Alignment */
+.job-checkbox {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 12px 15px;
+    /* Ensure padding is sufficient */
+}
+
+/* --- New Radio Options Helpers --- */
+.radio-options-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: flex-start;
+    background: #f8fafc;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    min-height: 48px;
+    height: 48px;
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #334155;
+    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.radio-label input[type="radio"] {
+    accent-color: var(--primary);
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Modal Overlay Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-container {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1e293b;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 15px;
+}
+
+/* Validation Error Styling */
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25) !important;
+}
+
+.is-invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* For select dropdowns */
+select.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+/* Small Action Buttons */
+.btn-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    text-align: center;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.btn-sm:hover {
+    opacity: 0.85;
+    transform: scale(1.05);
+}
+
+.btn-sm i {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: inherit;
+}

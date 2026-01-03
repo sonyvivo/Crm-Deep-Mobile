@@ -1,0 +1,37 @@
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Monthly Reports</div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Total Sales</th>
+                    <th>Total Purchases</th>
+                    <th>Expenses</th>
+                    <th>Net Profit</th>
+                    <th>Transactions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let m of monthlyData" (click)="viewMonth(m.month)"
+                    style="cursor: pointer; transition: background-color 0.2s;">
+                    <td><span class="badge badge-primary">{{ m.month }}</span></td>
+                    <td>{{ formatCurrency(m.sales) }}</td>
+                    <td>{{ formatCurrency(m.purchases) }}</td>
+                    <td style="color:var(--danger)">{{ formatCurrency(m.expenses) }}</td>
+                    <td [style.color]="m.netProfit >= 0 ? 'var(--success)' : 'var(--danger)'"
+                        style="font-weight: bold;">
+                        {{ formatCurrency(m.netProfit) }}
+                    </td>
+                    <td>{{ m.transactions }}</td>
+                </tr>
+                <tr *ngIf="monthlyData.length === 0">
+                    <td colspan="6" class="text-center">No Data Available</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

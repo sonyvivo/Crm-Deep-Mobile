@@ -1,0 +1,15 @@
+<div class="modal" [class.show]="isVisible">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm</h3>
+            <button class="modal-close" (click)="onCancel()">&times;</button>
+        </div>
+        <div style="padding: 20px;">
+            <p>{{ message }}</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="onCancel()">No</button>
+            <button class="btn btn-danger" (click)="onConfirm()">Yes</button>
+        </div>
+    </div>
+</div>

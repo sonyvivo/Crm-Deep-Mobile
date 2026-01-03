@@ -1,0 +1,237 @@
+/* Main Content Area */
+.main-wrapper {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    position: sticky;
+    top: 20px;
+    z-index: 99;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--dark);
+    cursor: pointer;
+}
+
+.header-title h1 {
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin: 0;
+}
+
+#welcomeUsername {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.quick-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.quick-actions span {
+    display: inline;
+}
+
+/* Modern Action Buttons */
+.quick-actions .btn {
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-jobsheet {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+    /* Cyan */
+}
+
+.btn-invoice {
+    background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+    /* Dark/Slate */
+}
+
+.btn-sell {
+    background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+    /* Emerald/Green */
+}
+
+.btn-purchase {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    /* Indigo/Blue */
+}
+
+.btn-expense {
+    background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+    /* Pink/Purple */
+}
+
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .header-title h1 {
+        font-size: 1.2rem;
+    }
+
+    .quick-actions span {
+        display: none;
+    }
+
+    /* Hide button text on mobile */
+}
+
+/* Mobile phones (under 768px) */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        top: 10px;
+    }
+
+    .header-title h1 {
+        font-size: 1rem;
+    }
+
+    #welcomeUsername {
+        font-size: 0.75rem;
+    }
+
+    .quick-actions {
+        gap: 5px;
+    }
+
+    .quick-actions .btn {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Small phones (under 576px) */
+@media (max-width: 576px) {
+    .main-content {
+        padding: 8px;
+    }
+
+    .header {
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .header-left {
+        gap: 8px;
+    }
+
+    .menu-toggle {
+        font-size: 1.2rem;
+    }
+
+    .header-title h1 {
+        font-size: 0.95rem;
+    }
+
+    #welcomeUsername {
+        font-size: 0.7rem;
+    }
+
+    .quick-actions {
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .quick-actions .btn {
+        padding: 6px 8px;
+        font-size: 11px;
+        border-radius: 6px;
+    }
+
+    .quick-actions .btn i {
+        font-size: 12px;
+    }
+}
+
+/* Extra small phones (under 400px) */
+@media (max-width: 400px) {
+    .header {
+        padding: 6px 8px;
+    }
+
+    .header-title h1 {
+        font-size: 0.85rem;
+    }
+
+    .quick-actions .btn {
+        padding: 5px 6px;
+        font-size: 10px;
+    }
+
+    .quick-actions .btn i {
+        font-size: 11px;
+    }
+}

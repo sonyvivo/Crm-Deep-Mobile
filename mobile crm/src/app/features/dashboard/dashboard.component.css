@@ -1,0 +1,76 @@
+.dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.dash-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dash-stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.dash-icon {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.dash-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.dash-label {
+    font-size: 0.9rem;
+    color: var(--gray);
+    font-weight: 500;
+}
+
+/* Charts Row */
+.dashboard-charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+/* Bottom Widgets Row */
+.dashboard-widgets-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Adjusted for 2 widgets for simplicity or 3 if needed */
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.widget-growth-positive {
+    color: var(--success);
+    font-weight: bold;
+}
+
+.widget-growth-negative {
+    color: var(--danger);
+    font-weight: bold;
+}
+
+@media (max-width: 992px) {
+
+    .dashboard-charts-row,
+    .dashboard-widgets-row {
+        grid-template-columns: 1fr;
+    }
+}

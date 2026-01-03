@@ -1,0 +1,148 @@
+<div class="sections-grid">
+    <!-- Security Settings -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-shield-alt"></i> Security</div>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label>Current PIN</label>
+                <input type="password" class="form-control" [(ngModel)]="oldPin" placeholder="Enter current PIN">
+            </div>
+            <div class="form-group">
+                <label>New PIN</label>
+                <input type="number" class="form-control" [(ngModel)]="newPin" placeholder="Enter 4-digit PIN">
+            </div>
+            <button class="btn btn-primary" (click)="updatePin()" [disabled]="!oldPin || !newPin">Update PIN</button>
+        </div>
+    </div>
+
+    <!-- Google Drive Backup -->
+    <div class="card gdrive-card">
+        <div class="card-header">
+            <div class="card-title"><i class="fab fa-google-drive"></i> Google Drive Backup</div>
+        </div>
+        <div class="card-body">
+            <!-- Connection Status -->
+            <div class="gdrive-status" [class.connected]="isGoogleSignedIn">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span *ngIf="isGoogleSignedIn">Connected as {{ googleEmail }}</span>
+                    <span *ngIf="!isGoogleSignedIn">Not Connected</span>
+                </div>
+
+                <button *ngIf="!isGoogleSignedIn" class="btn btn-google" (click)="connectGoogleDrive()"
+                    [disabled]="isGoogleLoading">
+                    <i class="fab fa-google"></i>
+                    {{ isGoogleLoading ? 'Connecting...' : 'Connect Google Drive' }}
+                </button>
+
+                <button *ngIf="isGoogleSignedIn" class="btn btn-outline-danger btn-sm"
+                    (click)="disconnectGoogleDrive()">
+                    Disconnect
+                </button>
+            </div>
+
+            <!-- Auto Backup Toggle -->
+            <div class="auto-backup-section" *ngIf="isGoogleSignedIn">
+                <hr>
+                <div class="toggle-row">
+                    <label class="toggle-label">
+                        <span>Auto-Backup on Changes</span>
+                        <small>Automatically backup when data changes</small>
+                    </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" [(ngModel)]="autoBackupEnabled" (change)="toggleAutoBackup()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="last-backup" *ngIf="lastBackupTime">
+                    <i class="fas fa-clock"></i> Last backup: {{ formatDate(lastBackupTime) }}
+                </div>
+            </div>
+
+            <!-- Manual Actions -->
+            <div class="gdrive-actions" *ngIf="isGoogleSignedIn">
+                <hr>
+                <div class="action-buttons">
+                    <button class="btn btn-success" (click)="backupToGoogleDrive()" [disabled]="isGoogleLoading">
+                        <i class="fas fa-cloud-upload-alt"></i> Backup Now
+                    </button>
+                    <button class="btn btn-info" (click)="loadBackupList()" [disabled]="isGoogleLoading">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        {{ showBackupList ? 'Hide Backups' : 'Restore from Drive' }}
+                    </button>
+                </div>
+
+                <!-- Backup List -->
+                <div class="backup-list" *ngIf="showBackupList">
+                    <div class="backup-item" *ngFor="let file of backupFiles" (click)="selectBackupForRestore(file.id)">
+                        <div class="backup-info">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="backup-name">{{ file.name }}</span>
+                        </div>
+                        <div class="backup-meta">
+                            <span>{{ formatDate(file.modifiedTime) }}</span>
+                            <span>{{ formatSize(file.size) }}</span>
+                        </div>
+                    </div>
+                    <div class="no-backups" *ngIf="backupFiles.length === 0">
+                        No backups found in Google Drive
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-database"></i> Local Data Management</div>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Download Backup</label>
+                <button class="btn btn-info" (click)="downloadBackup()">
+                    <i class="fas fa-download"></i> Download JSON
+                </button>
+            </div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+            <div class="mb-3">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Restore from File</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="file" (change)="onFileSelected($event)" accept=".json">
+                    <button class="btn btn-warning" (click)="restoreData()" [disabled]="!importFile">
+                        <i class="fas fa-upload"></i> Restore
+                    </button>
+                </div>
+            </div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px; color: var(--danger);">Danger
+                    Zone</label>
+                <button class="btn btn-danger" (click)="confirmClear()">
+                    <i class="fas fa-trash-alt"></i> Clear All Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" [class.show]="toastMessage" [class.success]="toastType==='success'"
+    [class.error]="toastType==='error'">
+    {{ toastMessage }}
+</div>
+
+<app-confirm-modal [isVisible]="isConfirmClearOpen"
+    message="Are you sure you want to delete ALL data? This cannot be undone." (confirm)="onClearConfirmed()"
+    (cancel)="isConfirmClearOpen=false">
+</app-confirm-modal>
+
+<app-confirm-modal [isVisible]="isRestoreConfirmOpen"
+    message="Restore data from this backup? Current data will be replaced." (confirm)="onRestoreFromDriveConfirmed()"
+    (cancel)="isRestoreConfirmOpen=false; selectedBackupId=''">
+</app-confirm-modal>

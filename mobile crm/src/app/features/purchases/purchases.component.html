@@ -1,0 +1,208 @@
+<!-- DATA VIEWS (Group & List) -->
+<div class="card" *ngIf="viewMode !== 'form'">
+    <div class="card-header">
+        <div class="card-title">Inventory Records</div>
+    </div>
+
+    <div class="filter-controls">
+        <div class="form-group">
+            <label>Filter Month</label>
+            <div style="display: flex; gap: 5px;">
+                <select class="form-control" [(ngModel)]="selectedMonth" (ngModelChange)="onFilterChange()">
+                    <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+                </select>
+                <select class="form-control" [(ngModel)]="selectedYear" (ngModelChange)="onFilterChange()">
+                    <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>From</label>
+            <input type="date" class="form-control" [(ngModel)]="filterDateFrom">
+        </div>
+        <div class="form-group">
+            <label>To</label>
+            <input type="date" class="form-control" [(ngModel)]="filterDateTo">
+        </div>
+        <div class="form-group">
+            <label>Supplier</label>
+            <input type="text" class="form-control" [(ngModel)]="filterSupplier" placeholder="Name" autocomplete="off"
+                name="filterSupplier">
+        </div>
+        <div class="button-group">
+            <button class="btn btn-primary" (click)="applyFilters()">Filter</button>
+            <button class="btn btn-info" (click)="resetFilters()">Reset</button>
+            <button class="btn btn-success" (click)="exportPDF()"><i class="fas fa-file-pdf"></i></button>
+            <button class="btn btn-primary" (click)="openNewPurchase()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <!-- Group View -->
+        <table class="table" *ngIf="viewMode === 'group'">
+            <thead>
+                <tr>
+                    <th>Supplier Name</th>
+                    <th>Transactions</th>
+                    <th>Total Spend</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let s of supplierStats">
+                    <td (click)="selectSupplier(s.name)"
+                        style="cursor: pointer; color: var(--primary); font-weight: 500;">
+                        {{ s.name }}
+                    </td>
+                    <td>{{ s.count }}</td>
+                    <td>{{ formatCurrency(s.total) }}</td>
+                    <td>
+                        <button class="btn-sm btn-info" (click)="selectSupplier(s.name)">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="supplierStats.length === 0">
+                    <td colspan="4" class="text-center">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- List View -->
+        <div *ngIf="viewMode === 'list'">
+            <div style="margin-bottom: 10px;">
+                <button class="btn btn-secondary" (click)="backToGroups()">
+                    <i class="fas fa-arrow-left"></i> Back to Suppliers
+                </button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Supplier</th>
+                        <th>Device</th>
+                        <th>Part</th>
+                        <th>Cost</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of filteredPurchases">
+                        <td>{{ p.date }}</td>
+                        <td>{{ p.supplier }}</td>
+                        <td>{{ p.deviceBrand }} {{ p.deviceModel }}</td>
+                        <td>{{ p.partName }}</td>
+                        <td>{{ formatCurrency(p.unitPrice) }}</td>
+                        <td>{{ formatCurrency(p.totalAmount) }}</td>
+                        <td class="action-buttons">
+                            <button class="btn-sm btn-primary" (click)="editPurchase(p)"><i
+                                    class="fas fa-edit"></i></button>
+                            <button class="btn-sm btn-danger" (click)="deletePurchase(p.id)"><i
+                                    class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filteredPurchases.length === 0">
+                        <td colspan="7" class="text-center">No Data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- FORM VIEW -->
+<div class="form-view-container" *ngIf="viewMode === 'form'">
+    <div class="header no-print">
+        <h1>{{ editingPurchase.id ? 'Edit Item' : 'New Inventory Item' }}</h1>
+        <button class="btn btn-secondary" (click)="cancelEdit()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="card form-card">
+        <form (ngSubmit)="savePurchase()">
+            <div class="form-container">
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-info-circle"></i> Part Info
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" class="form-control" [(ngModel)]="editingPurchase.date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Supplier</label>
+                        <input type="text" class="form-control" [(ngModel)]="editingPurchase.supplier" name="supplier"
+                            list="supplier-list" required placeholder="Select or type supplier name" autocomplete="off">
+                        <datalist id="supplier-list">
+                            <option *ngFor="let s of suppliersList" [value]="s"></option>
+                        </datalist>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Brand</label>
+                                <select class="form-control" [(ngModel)]="editingPurchase.deviceBrand" name="brand">
+                                    <option value="">Select Brand</option>
+                                    <optgroup *ngFor="let group of deviceBrands" [label]="group.category">
+                                        <option *ngFor="let b of group.brands" [value]="b">{{ b }}</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Model</label>
+                                <select class="form-control" [(ngModel)]="editingPurchase.deviceModel" name="model">
+                                    <option value="">Select Model</option>
+                                    <option *ngFor="let m of modelsList" [value]="m">{{ m }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Part Name</label>
+                        <select class="form-control" [(ngModel)]="editingPurchase.partName" name="partName" required>
+                            <option value="">Select Part</option>
+                            <optgroup *ngFor="let group of spareParts" [label]="group.category">
+                                <option *ngFor="let part of group.parts" [value]="part">{{ part }}</option>
+                            </optgroup>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-rupee-sign"></i> Costing
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Price (₹)</label>
+                        <input type="number" class="form-control" [(ngModel)]="editingPurchase.unitPrice"
+                            (change)="calculateTotal()" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Total (₹)</label>
+                        <input type="number" class="form-control" [value]="editingPurchase.totalAmount" readonly
+                            disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea class="form-control" [(ngModel)]="editingPurchase.notes" name="notes"
+                            rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions text-right"
+                style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                <button type="button" class="btn btn-secondary mr-2" (click)="cancelEdit()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<app-confirm-modal [isVisible]="isConfirmOpen" (confirm)="confirmDelete()"
+    (cancel)="isConfirmOpen=false"></app-confirm-modal>

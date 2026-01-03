@@ -1,0 +1,71 @@
+<div class="app-container">
+    <!-- Mobile Overlay -->
+    <div class="overlay" [class.active]="isSidebarOpen" (click)="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <app-sidebar [isOpen]="isSidebarOpen" (close)="closeSidebar()"></app-sidebar>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+
+        <!-- Main Header -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" (click)="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="header-title">
+                        <h1>Advanced Parts Tracking</h1>
+                        <span id="welcomeUsername">Welcome</span>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <!-- Privacy Button -->
+                    <button class="btn" [ngClass]="isPrivacyMode ? 'btn-secondary' : 'btn-warning'"
+                        (click)="togglePrivacy()" title="Hide/Show Amounts">
+                        <i class="fas" [ngClass]="isPrivacyMode ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+
+
+
+                    <div style="width: 1px; height: 30px; background: #ddd; margin: 0 10px;"></div>
+
+                    <!-- Jobsheet - Ctrl+J -->
+                    <button class="btn btn-jobsheet" (click)="navigate('/job-sheets', true)"
+                        title="New Jobsheet (Ctrl+J)">
+                        <i class="fas fa-clipboard-list"></i> <span class="d-none d-md-inline">Jobsheet</span>
+                    </button>
+
+                    <!-- Invoice - Ctrl+I -->
+                    <button class="btn btn-invoice" (click)="navigate('/billing', true)" title="New Invoice (Ctrl+I)">
+                        <i class="fas fa-file-invoice"></i> <span class="d-none d-md-inline">Invoice</span>
+                    </button>
+
+                    <!-- Sell - Ctrl+S -->
+                    <button class="btn btn-sell" (click)="navigate('/sales', true)" title="New Sell (Ctrl+S)">
+                        <i class="fas fa-cash-register"></i> <span class="d-none d-md-inline">Sell</span>
+                    </button>
+
+                    <!-- Inventory - Ctrl+P -->
+                    <button class="btn btn-purchase" (click)="navigate('/purchases', true)"
+                        title="New Inventory (Ctrl+P)">
+                        <i class="fas fa-boxes"></i> <span class="d-none d-md-inline">Inventory</span>
+                    </button>
+
+                    <!-- Expense - Ctrl+E -->
+                    <button class="btn btn-expense" (click)="navigate('/expenses', true)" title="New Expense (Ctrl+E)">
+                        <i class="fas fa-file-invoice-dollar"></i> <span class="d-none d-md-inline">Expense</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Router Outlet -->
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+
+    <!-- Global Pin Modal -->
+    <app-pin-modal [isVisible]="isPinModalOpen" (verified)="onPinVerified($event)" (cancel)="isPinModalOpen=false">
+    </app-pin-modal>
+</div>

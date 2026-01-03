@@ -1,0 +1,169 @@
+<div class="dashboard-container">
+
+    <!-- Top 6 Stats Grid -->
+    <div class="dashboard-stats-grid">
+        <!-- 1. Total Purchases -->
+        <div class="dash-stat-card">
+            <div class="dash-icon" style="color: var(--primary);">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="dash-value">{{ formatCurrency(totalPurchases) }}</div>
+            <div class="dash-label">Total Purchases</div>
+        </div>
+
+        <!-- 2. Total Sales -->
+        <div class="dash-stat-card">
+            <div class="dash-icon" style="color: var(--success);">
+                <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="dash-value">{{ formatCurrency(totalSales) }}</div>
+            <div class="dash-label">Total Sales</div>
+        </div>
+
+        <!-- 2.5 Total Expenses -->
+        <div class="dash-stat-card">
+            <div class="dash-icon" style="color: var(--danger);">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div class="dash-value">{{ formatCurrency(totalExpenses) }}</div>
+            <div class="dash-label">Total Expenses</div>
+        </div>
+
+        <!-- 3. Net Profit/Loss -->
+        <div class="dash-stat-card">
+            <div class="dash-icon"
+                [style.color]="netProfit >= 0 ? 'var(--success)' : (privacyMode ? 'var(--dark)' : 'var(--danger)')">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="dash-value"
+                [style.color]="netProfit >= 0 ? 'var(--success)' : (privacyMode ? 'var(--dark)' : 'var(--danger)')">{{
+                formatCurrency(netProfit) }}</div>
+            <div class="dash-label">Net Profit/Loss</div>
+        </div>
+
+        <!-- 4. Avg Profit Margin % -->
+        <div class="dash-stat-card">
+            <div class="dash-icon" style="color: var(--warning);">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="dash-value">{{ privacyMode ? '****' : profitMargin + '%' }}</div>
+            <div class="dash-label">Avg Profit Margin %</div>
+        </div>
+
+        <!-- 5. Payment Pending -->
+        <div class="dash-stat-card" (click)="showPendingSales()" style="cursor: pointer;">
+            <div class="dash-icon" style="color: var(--danger);">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="dash-value">{{ formatCurrency(paymentPending, false) }}</div>
+            <div class="dash-label">Payment Pending</div>
+        </div>
+
+        <!-- 6. Total Transactions -->
+        <div class="dash-stat-card">
+            <div class="dash-icon" style="color: var(--info);">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="dash-value">{{ totalTransactions }}</div>
+            <div class="dash-label">Total Transactions</div>
+        </div>
+
+        <!-- 7. Recurring Revenue -->
+        <div class="dash-stat-card">
+            <div class="dash-icon" style="color: var(--purple);">
+                <i class="fas fa-sync"></i>
+            </div>
+            <div class="dash-value">{{ formatCurrency(recurringRevenue) }}</div>
+            <div class="dash-label">Recurring Revenue</div>
+        </div>
+    </div>
+
+    <!-- Middle Row: Charts -->
+    <div class="dashboard-charts-row">
+        <!-- Left: Profit Margin Trend -->
+        <div class="card" style="margin-bottom:0;">
+            <div class="card-header">
+                <div class="card-title">Daily Sales & Profit ({{ selectedMonth }})</div>
+            </div>
+            <div style="height: 300px; width: 100%;">
+                <canvas id="profitTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Right: Top Parts Performance -->
+        <div class="card" style="margin-bottom:0;">
+            <div class="card-header">
+                <div class="card-title">Top Parts Performance</div>
+            </div>
+            <div style="height: 300px; width: 100%;">
+                <canvas id="topPartsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Row: Widgets -->
+    <div class="dashboard-widgets-row">
+        <!-- Widget 1: Trending Parts -->
+        <div class="card" style="margin-bottom:0;">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-chart-bar" style="color: #6f42c1; margin-right: 5px;"></i>
+                    Trending Parts</div>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="margin-bottom: 0;">
+                    <thead>
+                        <tr>
+                            <th>Part Name</th>
+                            <th>Model</th>
+                            <th>Sold (30d)</th>
+                            <th>Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let part of trendingParts">
+                            <td>{{ part.name }}</td>
+                            <td>{{ part.model }}</td>
+                            <td>{{ part.count }}</td>
+                            <td class="widget-growth-positive"><i class="fas fa-arrow-up"></i> {{ part.growth + '%' }}
+                            </td>
+                        </tr>
+                        <tr *ngIf="trendingParts.length === 0">
+                            <td colspan="4" class="text-center">No recent data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Widget 2: Payment Pending List -->
+        <div class="card" style="margin-bottom:0;">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-hourglass-half" style="color: #fd7e14; margin-right: 5px;"></i>
+                    Payment Pending</div>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="margin-bottom: 0;">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Amount Due</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of pendingPayments">
+                            <td>{{ p.customer }}</td>
+                            <td style="color: var(--danger); font-weight: bold;">{{ formatCurrency(p.amount, false) }}
+                            </td>
+                            <td>{{ p.date }}</td>
+                        </tr>
+                        <tr *ngIf="pendingPayments.length === 0">
+                            <td colspan="3" class="text-center">No pending payments</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

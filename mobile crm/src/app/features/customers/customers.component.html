@@ -1,0 +1,252 @@
+<!-- Customer List View -->
+<div class="card" *ngIf="viewMode === 'list'">
+    <div class="card-header">
+        <div class="card-title">Customers Directory</div>
+        <button class="btn btn-primary" (click)="openAddModal()">
+            <i class="fas fa-user-plus"></i> Add New
+        </button>
+    </div>
+
+    <div class="filter-controls">
+        <div class="form-group" style="flex: 2;">
+            <input type="text" class="form-control" [(ngModel)]="searchQuery" (input)="applyFilter()"
+                placeholder="Search by Name or Mobile..." autocomplete="off">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                    <th>Notes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let c of filteredCustomers">
+                    <td>
+                        <a href="javascript:void(0)" class="customer-link" (click)="viewCustomerDetails(c)">
+                            {{ c.name }}
+                        </a>
+                    </td>
+                    <td>{{ c.mobile }}</td>
+                    <td>{{ c.address }}</td>
+                    <td><small>{{ c.notes }}</small></td>
+                    <td class="action-buttons">
+                        <button class="btn-sm btn-success" (click)="addNewSale(c)" title="New Sale">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                        <button class="btn-sm btn-info" (click)="addNewInvoice(c)" title="Add Invoice">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                        <button class="btn-sm btn-warning" (click)="addNewJobSheet(c)" title="Add Job Sheet">
+                            <i class="fas fa-clipboard-list"></i>
+                        </button>
+                        <button class="btn-sm btn-primary" (click)="openEditModal(c)" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-sm btn-danger" (click)="deleteCustomer(c.id)" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredCustomers.length === 0">
+                    <td colspan="5" class="text-center">No Customers Found</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Customer Detail View -->
+<div class="card" *ngIf="viewMode === 'detail' && selectedCustomer">
+    <div class="card-header">
+        <div class="card-title">
+            <button class="btn btn-secondary mr-2" (click)="backToList()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            Customer: {{ selectedCustomer.name }}
+        </div>
+        <div class="customer-info">
+            <span *ngIf="selectedCustomer.mobile"><i class="fas fa-phone"></i> {{ selectedCustomer.mobile }}</span>
+            <span *ngIf="selectedCustomer.address" class="ml-3"><i class="fas fa-map-marker-alt"></i> {{
+                selectedCustomer.address }}</span>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards" style="display: flex; gap: 15px; padding: 15px; flex-wrap: wrap;">
+        <div class="summary-card"
+            style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 25px; border-radius: 10px; min-width: 150px;">
+            <div style="font-size: 24px; font-weight: bold;">{{ customerSales.length }}</div>
+            <div>Sales</div>
+        </div>
+        <div class="summary-card"
+            style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 15px 25px; border-radius: 10px; min-width: 150px;">
+            <div style="font-size: 24px; font-weight: bold;">{{ customerJobSheets.length }}</div>
+            <div>Job Sheets</div>
+        </div>
+        <div class="summary-card"
+            style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 15px 25px; border-radius: 10px; min-width: 150px;">
+            <div style="font-size: 24px; font-weight: bold;">{{ customerInvoices.length }}</div>
+            <div>Invoices</div>
+        </div>
+    </div>
+
+    <!-- Sales Records -->
+    <div class="records-section" style="padding: 15px;" *ngIf="customerSales.length > 0">
+        <h4 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+            <i class="fas fa-cash-register"></i> Sales Records
+        </h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Device</th>
+                        <th>Part</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of customerSales">
+                        <td>{{ s.date | date:'dd-MM-yyyy' }}</td>
+                        <td>{{ s.deviceBrand }} {{ s.deviceModel }}</td>
+                        <td>{{ s.partName }}</td>
+                        <td>₹{{ s.totalAmount }}</td>
+                        <td>
+                            <span class="badge" [class.badge-success]="s.paymentMode === 'Cash'"
+                                [class.badge-info]="s.paymentMode === 'Online'"
+                                [class.badge-warning]="s.paymentMode === 'Pending'">
+                                {{ s.paymentMode }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Job Sheets Records -->
+    <div class="records-section" style="padding: 15px;" *ngIf="customerJobSheets.length > 0">
+        <h4 style="color: #f5576c; border-bottom: 2px solid #f5576c; padding-bottom: 8px;">
+            <i class="fas fa-clipboard-list"></i> Job Sheets
+        </h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Device</th>
+                        <th>Problem</th>
+                        <th>Status</th>
+                        <th>Est. Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let j of customerJobSheets">
+                        <td><strong>{{ j.id }}</strong></td>
+                        <td>{{ j.date | date:'dd-MM-yyyy' }}</td>
+                        <td>{{ j.deviceBrand }} {{ j.deviceModel }}</td>
+                        <td>{{ j.faultCategory.join(', ') }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="getStatusClass(j.status)">{{ j.status }}</span>
+                        </td>
+                        <td>₹{{ j.estimatedCost }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Invoices Records -->
+    <div class="records-section" style="padding: 15px;" *ngIf="customerInvoices.length > 0">
+        <h4 style="color: #4facfe; border-bottom: 2px solid #4facfe; padding-bottom: 8px;">
+            <i class="fas fa-file-invoice"></i> Invoices
+        </h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Date</th>
+                        <th>Device</th>
+                        <th>Total</th>
+                        <th>Balance</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let i of customerInvoices">
+                        <td><strong>{{ i.id }}</strong></td>
+                        <td>{{ i.date | date:'dd-MM-yyyy' }}</td>
+                        <td>{{ i.deviceBrand }} {{ i.deviceModel }}</td>
+                        <td>₹{{ i.totalAmount }}</td>
+                        <td>₹{{ i.balanceDue }}</td>
+                        <td>
+                            <span class="badge" [class.badge-success]="i.paymentStatus !== 'Pending'"
+                                [class.badge-warning]="i.paymentStatus === 'Pending'">
+                                {{ i.paymentStatus }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- No Records Message -->
+    <div *ngIf="customerSales.length === 0 && customerJobSheets.length === 0 && customerInvoices.length === 0"
+        style="text-align: center; padding: 40px; color: #888;">
+        <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 15px;"></i>
+        <p>No records found for this customer</p>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" [class.show]="isModalOpen">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>{{ editingCustomer.id ? 'Edit' : 'Add' }} Customer</h3>
+            <button class="modal-close" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form (ngSubmit)="saveCustomer()">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" [(ngModel)]="editingCustomer.name" name="name" required
+                        autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Mobile</label>
+                    <div class="input-group">
+                        <span class="input-group-text">+91</span>
+                        <input type="tel" class="form-control" [(ngModel)]="editingCustomer.mobile" name="mobile"
+                            autocomplete="off" placeholder="10-digit mobile" maxlength="10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea class="form-control" [(ngModel)]="editingCustomer.address" name="address"
+                        rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea class="form-control" [(ngModel)]="editingCustomer.notes" name="notes" rows="2"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="saveCustomer()">Save</button>
+        </div>
+    </div>
+</div>
+
+<app-confirm-modal [isVisible]="isConfirmOpen" (confirm)="confirmDelete()"
+    (cancel)="isConfirmOpen=false"></app-confirm-modal>

@@ -1,0 +1,19 @@
+<div class="modal" [class.show]="isVisible">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Enter PIN</h3>
+            <button class="modal-close" (click)="close()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <input type="password" class="form-control" [(ngModel)]="pin" (keyup.enter)="verify()"
+                    placeholder="Enter PIN" style="text-align: center; letter-spacing: 5px; font-size: 1.5rem;"
+                    name="pin_no_fill" autocomplete="new-password">
+            </div>
+            <div *ngIf="error" style="color: var(--danger); font-weight: bold;">{{ error }}</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" style="width: 100%;" (click)="verify()">Unlock</button>
+        </div>
+    </div>
+</div>

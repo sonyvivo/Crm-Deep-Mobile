@@ -1,0 +1,17 @@
+{
+    "$schema": "https://openapi.vercel.com/schema#",
+    "version": 2,
+    "builds": [
+        {
+            "src": "dist/mobile-crm/browser/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/dist/mobile-crm/browser/index.html"
+        }
+    ],
+    "outputDirectory": "dist/mobile-crm/browser"
+}

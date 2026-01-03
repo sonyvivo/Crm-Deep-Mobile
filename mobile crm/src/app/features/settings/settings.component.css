@@ -1,0 +1,269 @@
+/* Inherit global styles */
+.sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .sections-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Google Drive Card */
+.gdrive-card {
+    border: 2px solid #4285f4;
+}
+
+.gdrive-card .card-header {
+    background: linear-gradient(135deg, #4285f4, #34a853);
+    color: white;
+}
+
+.gdrive-card .card-title {
+    color: white;
+}
+
+.gdrive-card .card-title i {
+    margin-right: 8px;
+}
+
+/* Connection Status */
+.gdrive-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #dc3545;
+}
+
+.gdrive-status.connected .status-dot {
+    background: #28a745;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Google Sign-In Button */
+.btn-google {
+    background: #fff;
+    color: #757575;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-google:hover {
+    background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-google i {
+    color: #4285f4;
+    font-size: 18px;
+}
+
+.btn-google:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Auto Backup Section */
+.auto-backup-section {
+    margin-top: 15px;
+}
+
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.toggle-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.toggle-label span {
+    font-weight: 600;
+}
+
+.toggle-label small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background: linear-gradient(135deg, #34a853, #4285f4);
+}
+
+input:checked+.slider:before {
+    transform: translateX(24px);
+}
+
+/* Last Backup Info */
+.last-backup {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #e8f5e9;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #2e7d32;
+}
+
+.last-backup i {
+    margin-right: 6px;
+}
+
+/* Action Buttons */
+.gdrive-actions {
+    margin-top: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Backup List */
+.backup-list {
+    margin-top: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.backup-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.backup-item:last-child {
+    border-bottom: none;
+}
+
+.backup-item:hover {
+    background: #f5f5f5;
+}
+
+.backup-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.backup-info i {
+    color: #4285f4;
+}
+
+.backup-name {
+    font-weight: 500;
+}
+
+.backup-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #666;
+}
+
+.no-backups {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+}
+
+/* Small buttons */
+.btn-sm {
+    padding: 5px 12px;
+    font-size: 13px;
+}
+
+.btn-outline-danger {
+    background: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* Reusing toast styles from global styles.css */
