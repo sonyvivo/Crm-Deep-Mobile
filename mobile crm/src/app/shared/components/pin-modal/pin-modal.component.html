@@ -1,21 +1,52 @@
 <div class="modal" [class.show]="isVisible">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Enter PIN</h3>
+            <h3>{{ showResetForm ? 'Reset PIN' : 'Enter PIN' }}</h3>
             <button class="modal-close" (click)="close()">&times;</button>
         </div>
-        <div class="modal-body">
+
+        <!-- PIN Entry Form -->
+        <div class="modal-body" *ngIf="!showResetForm">
             <div class="form-group">
                 <input type="password" class="form-control" [(ngModel)]="pin" (keyup.enter)="verify()"
                     placeholder="Enter PIN" style="text-align: center; letter-spacing: 5px; font-size: 1.5rem;"
-                    name="pin_no_fill" autocomplete="new-password">
+                    name="pin_no_fill" autocomplete="new-password" [disabled]="isLoading">
             </div>
-            <div *ngIf="error" style="color: var(--danger); font-weight: bold;">{{ error }}</div>
+            <div *ngIf="error" style="color: var(--danger); font-weight: bold; margin-top: 10px;">{{ error }}</div>
         </div>
-        <div class="modal-footer" style="flex-direction: column; gap: 10px;">
-            <button class="btn btn-primary" style="width: 100%;" (click)="verify()">Unlock</button>
-            <button class="btn btn-link" style="font-size: 0.85rem; color: #888;" (click)="forgotPin()">Forgot PIN?
-                Reset to default</button>
+
+        <!-- Reset PIN Form -->
+        <div class="modal-body" *ngIf="showResetForm">
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                Enter your login password to reset your PIN to default (1234)
+            </p>
+            <div class="form-group">
+                <input type="password" class="form-control" [(ngModel)]="resetPassword" (keyup.enter)="resetPin()"
+                    placeholder="Enter your password" [disabled]="isLoading">
+            </div>
+            <div *ngIf="error" style="color: var(--danger); font-weight: bold; margin-top: 10px;">{{ error }}</div>
+        </div>
+
+        <!-- PIN Entry Footer -->
+        <div class="modal-footer" style="flex-direction: column; gap: 10px;" *ngIf="!showResetForm">
+            <button class="btn btn-primary" style="width: 100%;" (click)="verify()" [disabled]="isLoading">
+                {{ isLoading ? 'Verifying...' : 'Unlock' }}
+            </button>
+            <button class="btn btn-link" style="font-size: 0.85rem; color: #888;" (click)="forgotPin()"
+                [disabled]="isLoading">
+                Forgot PIN?
+            </button>
+        </div>
+
+        <!-- Reset PIN Footer -->
+        <div class="modal-footer" style="flex-direction: column; gap: 10px;" *ngIf="showResetForm">
+            <button class="btn btn-primary" style="width: 100%;" (click)="resetPin()" [disabled]="isLoading">
+                {{ isLoading ? 'Resetting...' : 'Reset PIN' }}
+            </button>
+            <button class="btn btn-link" style="font-size: 0.85rem; color: #888;" (click)="cancelReset()"
+                [disabled]="isLoading">
+                Cancel
+            </button>
         </div>
     </div>
 </div>

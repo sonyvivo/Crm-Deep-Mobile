@@ -24,16 +24,43 @@ export class PinModalComponent {
 
   pin = '';
   error = '';
+  isLoading = false;
+  showResetForm = false;
+  resetPassword = '';
 
   constructor(private authService: AuthService) { }
 
   verify() {
-    if (this.authService.verifyPin(this.pin)) {
-      this.verified.emit(this.pin);
-      this.reset();
-    } else {
-      this.error = 'Invalid PIN';
+    if (!this.pin) {
+      this.error = 'Please enter PIN';
+      return;
     }
+
+    this.isLoading = true;
+    this.error = '';
+
+    // Use async API verification
+    this.authService.verifyPinAsync(this.pin).subscribe({
+      next: (valid) => {
+        this.isLoading = false;
+        if (valid) {
+          this.verified.emit(this.pin);
+          this.reset();
+        } else {
+          this.error = 'Invalid PIN';
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        // Fallback to sync verification
+        if (this.authService.verifyPin(this.pin)) {
+          this.verified.emit(this.pin);
+          this.reset();
+        } else {
+          this.error = 'Invalid PIN';
+        }
+      }
+    });
   }
 
   close() {
@@ -44,13 +71,48 @@ export class PinModalComponent {
   reset() {
     this.pin = '';
     this.error = '';
+    this.showResetForm = false;
+    this.resetPassword = '';
+    this.isLoading = false;
   }
 
   forgotPin() {
-    // Reset PIN to default '1234'
-    localStorage.setItem('appPin', '1234');
+    this.showResetForm = true;
     this.error = '';
-    alert('PIN has been reset to default: 1234');
-    this.pin = '';
+  }
+
+  resetPin() {
+    if (!this.resetPassword) {
+      this.error = 'Please enter your login password';
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = '';
+
+    this.authService.resetPinAsync(this.resetPassword).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.error = '';
+          this.showResetForm = false;
+          this.resetPassword = '';
+          alert('PIN has been reset to: ' + (response.pin || '1234'));
+        } else {
+          this.error = response.error || 'Failed to reset PIN';
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.error = 'Failed to reset PIN. Please try again.';
+      }
+    });
+  }
+
+  cancelReset() {
+    this.showResetForm = false;
+    this.resetPassword = '';
+    this.error = '';
   }
 }
+

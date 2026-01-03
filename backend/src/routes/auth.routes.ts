@@ -101,4 +101,84 @@ router.post('/register', asyncHandler(async (req: AuthRequest, res: Response) =>
     });
 }));
 
+// POST /api/auth/pin/verify - Verify PIN
+router.post('/pin/verify', authMiddleware, asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { pin } = req.body;
+
+    if (!pin) {
+        return res.status(400).json({ success: false, error: 'PIN required' });
+    }
+
+    const users = await sql`SELECT pin FROM users WHERE id = ${req.userId}`;
+
+    if (users.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const isValid = users[0].pin === pin;
+    res.json({ success: true, valid: isValid });
+}));
+
+// POST /api/auth/pin/change - Change PIN
+router.post('/pin/change', authMiddleware, asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { oldPin, newPin } = req.body;
+
+    if (!oldPin || !newPin) {
+        return res.status(400).json({ success: false, error: 'Old PIN and new PIN required' });
+    }
+
+    if (newPin.length < 4 || newPin.length > 10) {
+        return res.status(400).json({ success: false, error: 'PIN must be 4-10 characters' });
+    }
+
+    const users = await sql`SELECT pin FROM users WHERE id = ${req.userId}`;
+
+    if (users.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    if (users[0].pin !== oldPin) {
+        return res.status(401).json({ success: false, error: 'Invalid old PIN' });
+    }
+
+    await sql`UPDATE users SET pin = ${newPin} WHERE id = ${req.userId}`;
+    res.json({ success: true, message: 'PIN changed successfully' });
+}));
+
+// POST /api/auth/pin/reset - Reset PIN to default (requires password)
+router.post('/pin/reset', authMiddleware, asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ success: false, error: 'Password required to reset PIN' });
+    }
+
+    const users = await sql`SELECT password_hash FROM users WHERE id = ${req.userId}`;
+
+    if (users.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, users[0].password_hash);
+
+    if (!isValidPassword) {
+        return res.status(401).json({ success: false, error: 'Invalid password' });
+    }
+
+    const defaultPin = '1234';
+    await sql`UPDATE users SET pin = ${defaultPin} WHERE id = ${req.userId}`;
+    res.json({ success: true, message: 'PIN reset to default (1234)', pin: defaultPin });
+}));
+
+// GET /api/auth/pin - Get current PIN (for authenticated user)
+router.get('/pin', authMiddleware, asyncHandler(async (req: AuthRequest, res: Response) => {
+    const users = await sql`SELECT pin FROM users WHERE id = ${req.userId}`;
+
+    if (users.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    res.json({ success: true, pin: users[0].pin || '1234' });
+}));
+
 export default router;
