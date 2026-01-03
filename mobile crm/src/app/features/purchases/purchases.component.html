@@ -154,10 +154,8 @@
                         <div class="form-col">
                             <div class="form-group">
                                 <label>Model</label>
-                                <select class="form-control" [(ngModel)]="editingPurchase.deviceModel" name="model">
-                                    <option value="">Select Model</option>
-                                    <option *ngFor="let m of modelsList" [value]="m">{{ m }}</option>
-                                </select>
+                                <input type="text" class="form-control" [(ngModel)]="editingPurchase.deviceModel"
+                                    name="model" placeholder="Enter model name" autocomplete="off">
                             </div>
                         </div>
                     </div>
