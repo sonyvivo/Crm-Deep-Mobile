@@ -181,4 +181,47 @@ router.get('/pin', authMiddleware, asyncHandler(async (req: AuthRequest, res: Re
     res.json({ success: true, pin: users[0].pin || '1234' });
 }));
 
+// POST /api/auth/reset-password - Reset Password using Recovery Key
+router.post('/reset-password', asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { username, recoveryKey, newPassword } = req.body;
+
+    if (!username || !recoveryKey || !newPassword) {
+        return res.status(400).json({ success: false, error: 'All fields are required' });
+    }
+
+    if (newPassword.length < 6) {
+        return res.status(400).json({ success: false, error: 'Password must be at least 6 characters' });
+    }
+
+    // Get user with recovery key
+    const users = await sql`SELECT id, password_hash, recovery_key_hash FROM users WHERE username = ${username}`;
+
+    if (users.length === 0) {
+        // Return generic error for security
+        return res.status(401).json({ success: false, error: 'Invalid username or recovery key' });
+    }
+
+    const user = users[0];
+
+    // Check if recovery key is set
+    if (!user.recovery_key_hash) {
+        return res.status(400).json({ success: false, error: 'Recovery not configured for this account' });
+    }
+
+    // Verify recovery key
+    const isValidKey = await bcrypt.compare(recoveryKey, user.recovery_key_hash);
+
+    if (!isValidKey) {
+        return res.status(401).json({ success: false, error: 'Invalid username or recovery key' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await sql`UPDATE users SET password_hash = ${newPasswordHash} WHERE id = ${user.id}`;
+
+    res.json({ success: true, message: 'Password reset successfully. You can now login.' });
+}));
+
 export default router;

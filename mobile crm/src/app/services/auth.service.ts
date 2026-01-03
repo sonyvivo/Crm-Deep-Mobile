@@ -261,6 +261,18 @@ export class AuthService {
     );
   }
 
+  // Reset Password via Recovery Key
+  resetPassword(username: string, recoveryKey: string, newPassword: string): Observable<{ success: boolean; message?: string; error?: string }> {
+    return this.http.post<{ success: boolean; message?: string; error?: string }>(
+      `${this.apiUrl}/auth/reset-password`,
+      { username, recoveryKey, newPassword }
+    ).pipe(
+      catchError(error => {
+        return of({ success: false, error: error.error?.error || 'Failed to reset password' });
+      })
+    );
+  }
+
   // Load PIN from API on login
   loadPinFromServer(): void {
     this.http.get<{ success: boolean; pin: string }>(`${this.apiUrl}/auth/pin`).subscribe({

@@ -17,6 +17,13 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
+  // Forgot Password State
+  showForgotPassword = false;
+  recoveryKey = '';
+  newPassword = '';
+  resetMessage = '';
+  resetError = '';
+
   constructor(private authService: AuthService, private router: Router) {
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['/dashboard']);
@@ -46,6 +53,51 @@ export class LoginComponent {
         this.isLoading = false;
         this.errorMessage = 'Connection error. Please try again.';
         console.error('Login error:', err);
+      }
+    });
+  }
+
+  toggleForgotPassword() {
+    this.showForgotPassword = !this.showForgotPassword;
+    this.errorMessage = '';
+    this.resetMessage = '';
+    this.resetError = '';
+    this.recoveryKey = '';
+    this.newPassword = '';
+  }
+
+  doReset() {
+    if (!this.username || !this.recoveryKey || !this.newPassword) {
+      this.resetError = 'All fields are required';
+      return;
+    }
+
+    if (this.newPassword.length < 6) {
+      this.resetError = 'Password must be at least 6 characters';
+      return;
+    }
+
+    this.isLoading = true;
+    this.resetError = '';
+    this.resetMessage = '';
+
+    this.authService.resetPassword(this.username, this.recoveryKey, this.newPassword).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.resetMessage = response.message || 'Password reset successful!';
+          this.password = ''; // Clear login password field
+          setTimeout(() => {
+            this.toggleForgotPassword();
+            this.errorMessage = 'Please login with your new password';
+          }, 2000);
+        } else {
+          this.resetError = response.error || 'Failed to reset password';
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.resetError = 'Connection error. Please try again.';
       }
     });
   }

@@ -44,13 +44,14 @@
                 <span>{{ errorMessage }}</span>
             </div>
 
-            <form (ngSubmit)="doLogin()" class="login-form">
+            <!-- Login Form -->
+            <form (ngSubmit)="doLogin()" class="login-form" *ngIf="!showForgotPassword">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-wrapper">
                         <i class="fas fa-user"></i>
                         <input type="text" id="username" [(ngModel)]="username" name="username" required
-                            placeholder="Enter your username" autocomplete="off">
+                            placeholder="Enter your username" autocomplete="username">
                     </div>
                 </div>
 
@@ -69,12 +70,67 @@
                         <span class="checkmark"></span>
                         <span>Remember me</span>
                     </label>
-                    <a href="#" class="forgot-link">Forgot Password?</a>
+                    <a href="javascript:void(0)" class="forgot-link" (click)="toggleForgotPassword()">Forgot
+                        Password?</a>
                 </div>
 
-                <button type="submit" class="btn-login" [disabled]="!username || !password">
-                    <span>Sign In</span>
-                    <i class="fas fa-arrow-right"></i>
+                <button type="submit" class="btn-login" [disabled]="!username || !password || isLoading">
+                    <span>{{ isLoading ? 'Signing In...' : 'Sign In' }}</span>
+                    <i class="fas fa-arrow-right" *ngIf="!isLoading"></i>
+                </button>
+            </form>
+
+            <!-- Forgot Password Form -->
+            <form (ngSubmit)="doReset()" class="login-form" *ngIf="showForgotPassword">
+                <div class="alert alert-success" *ngIf="resetMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span>{{ resetMessage }}</span>
+                </div>
+
+                <div class="alert alert-danger" *ngIf="resetError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ resetError }}</span>
+                </div>
+
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    Enter your username and recovery key to reset your password.
+                </p>
+
+                <div class="form-group">
+                    <label for="reset-username">Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="reset-username" [(ngModel)]="username" name="username" required
+                            placeholder="Enter your username" autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recovery-key">Recovery Key</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-key"></i>
+                        <input type="password" id="recovery-key" [(ngModel)]="recoveryKey" name="recoveryKey" required
+                            placeholder="Enter recovery key" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="new-password" [(ngModel)]="newPassword" name="newPassword" required
+                            placeholder="Enter new password (min 6 chars)" autocomplete="new-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login"
+                    [disabled]="!username || !recoveryKey || !newPassword || isLoading">
+                    <span>{{ isLoading ? 'Resetting...' : 'Reset Password' }}</span>
+                </button>
+
+                <button type="button" class="btn-link" (click)="toggleForgotPassword()"
+                    style="width: 100%; margin-top: 15px; background: none; border: none; color: #666; cursor: pointer;">
+                    Back to Login
                 </button>
             </form>
 
