@@ -1,6 +1,7 @@
 {
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist/mobile-crm/browser",
+    "buildCommand": "npm run build -- --configuration=production",
+    "outputDirectory": "dist/deep-mobile-crm/browser",
+    "framework": "angular",
     "rewrites": [
         {
             "source": "/(.*)",
