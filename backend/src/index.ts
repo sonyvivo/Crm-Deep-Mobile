@@ -17,25 +17,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-const allowedOrigins = [
-    'http://localhost:4200',
-    'https://crm-deep-mobile-edhy.vercel.app',
-    'https://crm-deep-mobile.vercel.app',
-    process.env.FRONTEND_URL
-].filter(Boolean);
-
+// Middleware - Allow all origins for cross-device access
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(null, true); // Allow all origins for now
-        }
-    },
-    credentials: true
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false
 }));
 app.use(express.json());
 
