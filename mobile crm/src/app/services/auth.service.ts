@@ -5,6 +5,7 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
+
 interface AuthResponse {
   success: boolean;
   token?: string;
@@ -74,6 +75,8 @@ export class AuthService {
         })
       );
   }
+
+
 
   // Verify token with backend
   verifyToken(): Observable<boolean> {
@@ -266,6 +269,30 @@ export class AuthService {
     return this.http.post<{ success: boolean; message?: string; error?: string }>(
       `${this.apiUrl}/auth/reset-password`,
       { username, recoveryKey, newPassword }
+    ).pipe(
+      catchError(error => {
+        return of({ success: false, error: error.error?.error || 'Failed to reset password' });
+      })
+    );
+  }
+
+  // Request OTP
+  requestOtp(username: string): Observable<{ success: boolean; message?: string; error?: string }> {
+    return this.http.post<{ success: boolean; message?: string; error?: string }>(
+      `${this.apiUrl}/auth/request-otp`,
+      { username }
+    ).pipe(
+      catchError(error => {
+        return of({ success: false, error: error.error?.error || 'Failed to request OTP' });
+      })
+    );
+  }
+
+  // Reset Password via OTP
+  resetPasswordWithOtp(username: string, otp: string, newPassword: string): Observable<{ success: boolean; message?: string; error?: string }> {
+    return this.http.post<{ success: boolean; message?: string; error?: string }>(
+      `${this.apiUrl}/auth/verify-otp-reset`,
+      { username, otp, newPassword }
     ).pipe(
       catchError(error => {
         return of({ success: false, error: error.error?.error || 'Failed to reset password' });

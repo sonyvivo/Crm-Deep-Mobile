@@ -20,15 +20,6 @@ export class ApiService {
 
     constructor(private http: HttpClient) { }
 
-    private getHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token');
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        if (token) {
-            headers = headers.set('Authorization', `Bearer ${token}`);
-        }
-        return headers;
-    }
-
     // Auth
     login(username: string, password: string): Observable<ApiResponse<any>> {
         return this.http.post<ApiResponse<any>>(`${this.baseUrl}/auth/login`, { username, password });
@@ -39,32 +30,32 @@ export class ApiService {
     }
 
     verifyToken(): Observable<ApiResponse<any>> {
-        return this.http.get<ApiResponse<any>>(`${this.baseUrl}/auth/verify`, { headers: this.getHeaders() });
+        return this.http.get<ApiResponse<any>>(`${this.baseUrl}/auth/verify`);
     }
 
     // Generic CRUD methods
     getAll<T>(endpoint: string): Observable<T[]> {
-        return this.http.get<ApiResponse<T[]>>(`${this.baseUrl}/${endpoint}`, { headers: this.getHeaders() })
+        return this.http.get<ApiResponse<T[]>>(`${this.baseUrl}/${endpoint}`)
             .pipe(map(res => res.data || []));
     }
 
     getOne<T>(endpoint: string, id: string): Observable<T> {
-        return this.http.get<ApiResponse<T>>(`${this.baseUrl}/${endpoint}/${id}`, { headers: this.getHeaders() })
+        return this.http.get<ApiResponse<T>>(`${this.baseUrl}/${endpoint}/${id}`)
             .pipe(map(res => res.data as T));
     }
 
     create<T>(endpoint: string, data: T): Observable<T> {
-        return this.http.post<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data, { headers: this.getHeaders() })
+        return this.http.post<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data)
             .pipe(map(res => res.data as T));
     }
 
     update<T>(endpoint: string, id: string, data: T): Observable<T> {
-        return this.http.put<ApiResponse<T>>(`${this.baseUrl}/${endpoint}/${id}`, data, { headers: this.getHeaders() })
+        return this.http.put<ApiResponse<T>>(`${this.baseUrl}/${endpoint}/${id}`, data)
             .pipe(map(res => res.data as T));
     }
 
     delete(endpoint: string, id: string): Observable<any> {
-        return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/${endpoint}/${id}`, { headers: this.getHeaders() });
+        return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/${endpoint}/${id}`);
     }
 
     // Specific endpoints

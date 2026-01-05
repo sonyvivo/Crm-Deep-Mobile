@@ -64,6 +64,8 @@
                     </div>
                 </div>
 
+
+
                 <div class="form-options">
                     <label class="remember-me">
                         <input type="checkbox">
@@ -81,7 +83,7 @@
             </form>
 
             <!-- Forgot Password Form -->
-            <form (ngSubmit)="doReset()" class="login-form" *ngIf="showForgotPassword">
+            <div class="login-form" *ngIf="showForgotPassword">
                 <div class="alert alert-success" *ngIf="resetMessage">
                     <i class="fas fa-check-circle"></i>
                     <span>{{ resetMessage }}</span>
@@ -93,46 +95,47 @@
                 </div>
 
                 <p style="text-align: center; color: #666; margin-bottom: 20px;">
-                    Enter your username and recovery key to reset your password.
+                    Enter your username, recovery key, and new password to reset.
                 </p>
 
-                <div class="form-group">
-                    <label for="reset-username">Username</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="reset-username" [(ngModel)]="username" name="username" required
-                            placeholder="Enter your username" autocomplete="username">
+                <form (ngSubmit)="doReset()">
+                    <div class="form-group">
+                        <label for="reset-username">Username</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="reset-username" [(ngModel)]="username" name="username" required
+                                placeholder="Enter your username" autocomplete="username">
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="recovery-key">Recovery Key</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-key"></i>
-                        <input type="password" id="recovery-key" [(ngModel)]="recoveryKey" name="recoveryKey" required
-                            placeholder="Enter recovery key" autocomplete="off">
+                    <div class="form-group">
+                        <label for="recovery-key">Recovery Key</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="recovery-key" [(ngModel)]="recoveryKey" name="recoveryKey" required
+                                placeholder="Enter your recovery key" autocomplete="off">
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="new-password">New Password</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="new-password" [(ngModel)]="newPassword" name="newPassword" required
-                            placeholder="Enter new password (min 6 chars)" autocomplete="new-password">
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="new-password" [(ngModel)]="newPassword" name="newPassword"
+                                required placeholder="Enter new password (min 6 chars)" autocomplete="new-password">
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" class="btn-login"
-                    [disabled]="!username || !recoveryKey || !newPassword || isLoading">
-                    <span>{{ isLoading ? 'Resetting...' : 'Reset Password' }}</span>
-                </button>
+                    <button type="submit" class="btn-login" [disabled]="!username || !recoveryKey || !newPassword || isLoading">
+                        <span>{{ isLoading ? 'Resetting...' : 'Reset Password' }}</span>
+                    </button>
+                </form>
 
                 <button type="button" class="btn-link" (click)="toggleForgotPassword()"
                     style="width: 100%; margin-top: 15px; background: none; border: none; color: #666; cursor: pointer;">
                     Back to Login
                 </button>
-            </form>
+            </div>
 
             <div class="card-footer">
                 <p>Secured with <i class="fas fa-shield-alt"></i> enterprise-grade encryption</p>

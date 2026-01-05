@@ -19,24 +19,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+import { loginLimiter, otpLimiter } from './middleware/rate-limiter.middleware.js';
+
 // Security Headers
 app.use(helmet());
-
-// Rate Limiting - Brute Force Protection
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 login requests per windowMs
-    message: { success: false, error: 'Too many login attempts, please try again after 15 minutes' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
-    standardHeaders: true,
-    legacyHeaders: false,
-});
 
 // Middleware - Allow all origins for cross-device access
 app.use(cors({
@@ -47,10 +33,24 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Global Request Logger
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        if (duration > 1000) {
+            console.log(`⚠️ SLOW REQUEST: ${req.method} ${req.url} took ${duration}ms`);
+        } else {
+            console.log(`${req.method} ${req.url} took ${duration}ms`);
+        }
+    });
+    next();
+});
+
 // Apply rate limiting
-app.use('/api/', apiLimiter);
 app.use('/api/auth/login', loginLimiter);
-app.use('/api/auth/reset-password', loginLimiter); // Protect reset password too
+// app.use('/api/auth/request-otp', otpLimiter);
+app.use('/api/auth/verify-otp-reset', loginLimiter); // Prevent guessing OTPs
 
 // Routes
 app.use('/api/auth', authRoutes);

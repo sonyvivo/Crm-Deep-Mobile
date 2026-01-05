@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -24,7 +25,10 @@ export class LoginComponent {
   resetMessage = '';
   resetError = '';
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['/dashboard']);
     }
@@ -82,7 +86,7 @@ export class LoginComponent {
     this.resetMessage = '';
 
     this.authService.resetPassword(this.username, this.recoveryKey, this.newPassword).subscribe({
-      next: (response) => {
+      next: (response: { success: boolean, message?: string, error?: string }) => {
         this.isLoading = false;
         if (response.success) {
           this.resetMessage = response.message || 'Password reset successful!';

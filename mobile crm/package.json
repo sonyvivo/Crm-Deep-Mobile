@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "@abacritt/angularx-social-login": "^2.5.1",
     "@angular/animations": "^17.3.0",
     "@angular/common": "^17.3.0",
     "@angular/compiler": "^17.3.0",
@@ -19,6 +20,7 @@
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
     "chart.js": "^4.5.1",
+    "google-one-tap": "^1.0.6",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
     "rxjs": "~7.8.0",

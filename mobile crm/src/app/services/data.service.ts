@@ -37,56 +37,31 @@ export class DataService {
 
   constructor(private http: HttpClient, private injector: Injector) { }
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
-    });
-  }
-
-  // Load all data from API
+  // Load all data from API using Bootstrap endpoint
   async loadAllData(): Promise<void> {
     if (this.isDataLoaded) return;
 
     try {
-      const headers = this.getHeaders();
+      const start = Date.now();
+      console.log('🚀 Loading bootstrap data...');
+      const response = await firstValueFrom(this.http.get<ApiResponse<any>>(`${this.apiUrl}/auth/bootstrap`));
 
-      // Load all data in parallel
-      const [customers, suppliers, purchases, sales, expenses, jobSheets, invoices] = await Promise.all([
-        firstValueFrom(this.http.get<ApiResponse<Customer[]>>(`${this.apiUrl}/customers`, { headers }).pipe(
-          map(res => res.data || []), catchError(() => of([]))
-        )),
-        firstValueFrom(this.http.get<ApiResponse<string[]>>(`${this.apiUrl}/suppliers`, { headers }).pipe(
-          map(res => res.data || []), catchError(() => of([]))
-        )),
-        firstValueFrom(this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/purchases`, { headers }).pipe(
-          map(res => this.mapPurchases(res.data || [])), catchError(() => of([]))
-        )),
-        firstValueFrom(this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/sales`, { headers }).pipe(
-          map(res => this.mapSales(res.data || [])), catchError(() => of([]))
-        )),
-        firstValueFrom(this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/expenses`, { headers }).pipe(
-          map(res => this.mapExpenses(res.data || [])), catchError(() => of([]))
-        )),
-        firstValueFrom(this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/jobsheets`, { headers }).pipe(
-          map(res => this.mapJobSheets(res.data || [])), catchError(() => of([]))
-        )),
-        firstValueFrom(this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/invoices`, { headers }).pipe(
-          map(res => this.mapInvoices(res.data || [])), catchError(() => of([]))
-        ))
-      ]);
+      if (response && response.success && response.data) {
+        const d = response.data;
 
-      this.customersSubject.next(customers);
-      this.suppliersSubject.next(suppliers);
-      this.purchasesSubject.next(purchases);
-      this.salesSubject.next(sales);
-      this.expensesSubject.next(expenses);
-      this.jobSheetsSubject.next(jobSheets);
-      this.invoicesSubject.next(invoices);
+        this.customersSubject.next(d.customers || []);
+        this.suppliersSubject.next(d.suppliers || []);
+        this.purchasesSubject.next(this.mapPurchases(d.purchases || []));
+        this.salesSubject.next(this.mapSales(d.sales || []));
+        this.expensesSubject.next(this.mapExpenses(d.expenses || []));
+        this.jobSheetsSubject.next(this.mapJobSheets(d.jobsheets || []));
+        this.invoicesSubject.next(this.mapInvoices(d.invoices || []));
 
-      this.isDataLoaded = true;
-      console.log('✅ All data loaded from API');
+        this.isDataLoaded = true;
+        console.log(`✅ All data loaded via Bootstrap in ${Date.now() - start}ms`);
+      } else {
+        console.error('Bootstrap failed:', response?.error);
+      }
     } catch (error) {
       console.error('Failed to load data from API:', error);
     }
@@ -209,7 +184,7 @@ export class DataService {
 
   async addSupplier(name: string) {
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/suppliers`, { name }, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/suppliers`, { name }));
       const current = this.suppliersSubject.value;
       if (!current.includes(name)) {
         this.suppliersSubject.next([...current, name].sort());
@@ -221,7 +196,7 @@ export class DataService {
 
   async deleteSupplier(name: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/suppliers/${encodeURIComponent(name)}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/suppliers/${encodeURIComponent(name)}`));
       this.suppliersSubject.next(this.suppliersSubject.value.filter(s => s !== name));
     } catch (error) {
       console.error('Failed to delete supplier:', error);
@@ -234,7 +209,7 @@ export class DataService {
   async addPurchase(p: Purchase) {
     p.id = p.id || this.generateId('PUR', this.purchasesSubject.value);
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/purchases`, p, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/purchases`, p));
       this.purchasesSubject.next([p, ...this.purchasesSubject.value]);
     } catch (error) {
       console.error('Failed to add purchase:', error);
@@ -243,7 +218,7 @@ export class DataService {
 
   async updatePurchase(p: Purchase) {
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/purchases/${p.id}`, p, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.put(`${this.apiUrl}/purchases/${p.id}`, p));
       const current = this.purchasesSubject.value;
       const index = current.findIndex(x => x.id === p.id);
       if (index !== -1) {
@@ -257,7 +232,7 @@ export class DataService {
 
   async deletePurchase(id: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/purchases/${id}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/purchases/${id}`));
       this.purchasesSubject.next(this.purchasesSubject.value.filter(x => x.id !== id));
     } catch (error) {
       console.error('Failed to delete purchase:', error);
@@ -285,7 +260,7 @@ export class DataService {
     }
 
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/sales`, s, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/sales`, s));
       this.salesSubject.next([s, ...this.salesSubject.value]);
     } catch (error) {
       console.error('Failed to add sale:', error);
@@ -294,7 +269,7 @@ export class DataService {
 
   async updateSale(s: Sale) {
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/sales/${s.id}`, s, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.put(`${this.apiUrl}/sales/${s.id}`, s));
       const current = this.salesSubject.value;
       const index = current.findIndex(x => x.id === s.id);
       if (index !== -1) {
@@ -308,7 +283,7 @@ export class DataService {
 
   async deleteSale(id: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/sales/${id}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/sales/${id}`));
       this.salesSubject.next(this.salesSubject.value.filter(x => x.id !== id));
     } catch (error) {
       console.error('Failed to delete sale:', error);
@@ -321,7 +296,7 @@ export class DataService {
   async addExpense(e: Expense) {
     e.id = e.id || this.generateId('EXP', this.expensesSubject.value);
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/expenses`, e, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/expenses`, e));
       this.expensesSubject.next([e, ...this.expensesSubject.value]);
     } catch (error) {
       console.error('Failed to add expense:', error);
@@ -330,7 +305,7 @@ export class DataService {
 
   async updateExpense(e: Expense) {
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/expenses/${e.id}`, e, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.put(`${this.apiUrl}/expenses/${e.id}`, e));
       const current = this.expensesSubject.value;
       const index = current.findIndex(x => x.id === e.id);
       if (index !== -1) {
@@ -344,7 +319,7 @@ export class DataService {
 
   async deleteExpense(id: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/expenses/${id}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/expenses/${id}`));
       this.expensesSubject.next(this.expensesSubject.value.filter(x => x.id !== id));
     } catch (error) {
       console.error('Failed to delete expense:', error);
@@ -357,8 +332,8 @@ export class DataService {
   async addCustomer(c: Customer) {
     c.id = c.id || this.generateId('CUST', this.customersSubject.value);
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/customers`, c, { headers: this.getHeaders() }));
-      this.customersSubject.next([...this.customersSubject.value, c]);
+      await firstValueFrom(this.http.post(`${this.apiUrl}/customers`, c));
+      this.customersSubject.next([c, ...this.customersSubject.value]);
     } catch (error) {
       console.error('Failed to add customer:', error);
     }
@@ -366,7 +341,7 @@ export class DataService {
 
   async updateCustomer(c: Customer) {
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/customers/${c.id}`, c, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.put(`${this.apiUrl}/customers/${c.id}`, c));
       const current = this.customersSubject.value;
       const index = current.findIndex(x => x.id === c.id);
       if (index !== -1) {
@@ -380,7 +355,7 @@ export class DataService {
 
   async deleteCustomer(id: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/customers/${id}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/customers/${id}`));
       this.customersSubject.next(this.customersSubject.value.filter(x => x.id !== id));
     } catch (error) {
       console.error('Failed to delete customer:', error);
@@ -411,7 +386,7 @@ export class DataService {
     }
 
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/jobsheets`, j, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/jobsheets`, j));
       this.jobSheetsSubject.next([j, ...this.jobSheetsSubject.value]);
     } catch (error) {
       console.error('Failed to add job sheet:', error);
@@ -421,7 +396,7 @@ export class DataService {
   async updateJobSheet(j: JobSheet) {
     j.updatedAt = new Date().toISOString();
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/jobsheets/${j.id}`, j, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.put(`${this.apiUrl}/jobsheets/${j.id}`, j));
       const current = this.jobSheetsSubject.value;
       const index = current.findIndex(x => x.id === j.id);
       if (index !== -1) {
@@ -435,7 +410,7 @@ export class DataService {
 
   async deleteJobSheet(id: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/jobsheets/${id}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/jobsheets/${id}`));
       this.jobSheetsSubject.next(this.jobSheetsSubject.value.filter(x => x.id !== id));
     } catch (error) {
       console.error('Failed to delete job sheet:', error);
@@ -447,7 +422,7 @@ export class DataService {
 
   async addInvoice(inv: Invoice) {
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/invoices`, inv, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/invoices`, inv));
       this.invoicesSubject.next([inv, ...this.invoicesSubject.value]);
     } catch (error) {
       console.error('Failed to add invoice:', error);
@@ -456,7 +431,7 @@ export class DataService {
 
   async updateInvoice(inv: Invoice) {
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/invoices/${inv.id}`, inv, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.put(`${this.apiUrl}/invoices/${inv.id}`, inv));
       const current = this.invoicesSubject.value;
       const index = current.findIndex(x => x.id === inv.id);
       if (index !== -1) {
@@ -470,7 +445,7 @@ export class DataService {
 
   async deleteInvoice(id: string) {
     try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/invoices/${id}`, { headers: this.getHeaders() }));
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/invoices/${id}`));
       this.invoicesSubject.next(this.invoicesSubject.value.filter(x => x.id !== id));
     } catch (error) {
       console.error('Failed to delete invoice:', error);
