@@ -194,13 +194,9 @@
             </div>
             <div class="form-col">
                 <div class="form-group">
-                    <label>Issues</label>
-                    <select class="form-control" name="dIssues" [(ngModel)]="currentInvoice.deviceIssues">
-                        <option value="">Select Issue</option>
-                        <optgroup *ngFor="let group of repairProblems" [label]="group.category">
-                            <option *ngFor="let p of group.problems" [value]="p">{{ p }}</option>
-                        </optgroup>
-                    </select>
+                    <label>Problem</label>
+                    <input type="text" class="form-control" name="dProblem" [(ngModel)]="currentInvoice.deviceIssues"
+                        placeholder="Describe the problem">
                 </div>
             </div>
         </div>
@@ -393,7 +389,7 @@
                 <h4>Device Details</h4>
                 <p><strong>Device:</strong> {{ currentInvoice.deviceBrand }} {{ currentInvoice.deviceModel }}</p>
                 <p><strong>IMEI:</strong> {{ currentInvoice.deviceImei || '-' }}</p>
-                <p><strong>Issue:</strong> {{ currentInvoice.deviceIssues || '-' }}</p>
+                <p><strong>Problem:</strong> {{ currentInvoice.deviceIssues || '-' }}</p>
             </div>
         </div>
 
