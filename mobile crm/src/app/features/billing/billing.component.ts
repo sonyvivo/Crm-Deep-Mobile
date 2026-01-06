@@ -387,6 +387,41 @@ export class BillingComponent implements OnInit, OnDestroy {
     alert('PDF Download not yet implemented. Use Print -> Save as PDF.');
   }
 
+  async saveAndWhatsApp() {
+    if (this.currentInvoice.customerMobile && !/^\d{10}$/.test(this.currentInvoice.customerMobile)) {
+      alert('Mobile Number must be 10 digits.');
+      return;
+    }
+    // Basic Validation
+    if (!this.currentInvoice.customerName || !this.currentInvoice.items.length) {
+      alert('Please fill Customer Name and at least one Item.');
+      return;
+    }
+
+    try {
+      // Check if existing ID - handled by data service logic usually, 
+      // but here we manually set ID. If ID exists in list, update.
+      const exists = this.invoices.find(i => i.id === this.currentInvoice.id);
+      if (exists) {
+        await this.dataService.updateInvoice(this.currentInvoice);
+      } else {
+        await this.dataService.addInvoice(this.currentInvoice);
+      }
+
+      // Wait a moment for the invoice to be added to the list
+      setTimeout(() => {
+        this.shareOnWhatsApp(this.currentInvoice);
+      }, 100);
+
+      alert('Invoice Saved Successfully! Opening WhatsApp...');
+      this.setView('list');
+      this.resetForm();
+    } catch (e: any) {
+      console.error('Error saving invoice', e);
+      alert('Error saving invoice: ' + (e.message || e));
+    }
+  }
+
   applyFilter() {
     this.filteredInvoices = this.invoices.filter(inv => {
       const q = this.searchQuery.toLowerCase();
