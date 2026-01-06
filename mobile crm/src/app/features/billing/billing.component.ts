@@ -408,14 +408,15 @@ export class BillingComponent implements OnInit, OnDestroy {
         await this.dataService.addInvoice(this.currentInvoice);
       }
 
-      // Wait a moment for the invoice to be added to the list
+      // Switch to preview mode
+      this.setView('preview');
+
+      // Wait a moment then open WhatsApp
       setTimeout(() => {
         this.shareOnWhatsApp(this.currentInvoice);
-      }, 100);
+      }, 500);
 
-      alert('Invoice Saved Successfully! Opening WhatsApp...');
-      this.setView('list');
-      this.resetForm();
+      alert('Invoice Saved! Opening WhatsApp... You can print the invoice from this page.');
     } catch (e: any) {
       console.error('Error saving invoice', e);
       alert('Error saving invoice: ' + (e.message || e));
