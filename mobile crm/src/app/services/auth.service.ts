@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   // --- Login Logic (API-based) ---
-  login(username: string, password: string): Observable<boolean> {
+  login(username: string, password: string): Observable<{ success: boolean; error?: string }> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, { username, password })
       .pipe(
         map(response => {
@@ -65,13 +65,19 @@ export class AuthService {
             this.startIdleTimer();
             // Load PIN from server after successful login
             this.loadPinFromServer();
-            return true;
+            return { success: true };
           }
-          return false;
+          return { success: false, error: response.error || 'Invalid credentials' };
         }),
         catchError(error => {
           console.error('Login error:', error);
-          return of(false);
+          let errorMessage = 'Connection error';
+          if (error.status === 0) {
+            errorMessage = 'Cannot connect to server. Check internet or if server is running.';
+          } else if (error.error?.error) {
+            errorMessage = error.error.error;
+          }
+          return of({ success: false, error: errorMessage });
         })
       );
   }

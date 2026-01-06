@@ -8,76 +8,109 @@ router.use(authMiddleware);
 
 // GET /api/invoices
 router.get('/', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const invoices = await sql`SELECT * FROM invoices ORDER BY date DESC`;
-    res.json({ success: true, data: invoices });
+  const invoices = await sql`SELECT * FROM invoices ORDER BY date DESC`;
+  res.json({ success: true, data: invoices });
 }));
 
 // GET /api/invoices/:id
 router.get('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-    const items = await sql`SELECT * FROM invoices WHERE id = ${id}`;
+  const { id } = req.params;
+  const invoices = await sql`SELECT * FROM invoices WHERE id = ${id}`;
 
-    if (items.length === 0) {
-        return res.status(404).json({ success: false, error: 'Invoice not found' });
-    }
-    res.json({ success: true, data: items[0] });
+  if (invoices.length === 0) {
+    return res.status(404).json({ success: false, error: 'Invoice not found' });
+  }
+  res.json({ success: true, data: invoices[0] });
 }));
 
 // POST /api/invoices
 router.post('/', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const inv = req.body;
+  const inv = req.body;
 
-    const result = await sql`
-    INSERT INTO invoices (
-      id, date, customer_name, customer_mobile, customer_address, device_type, device_brand, device_model,
-      device_imei, device_issues, device_accessories, items, subtotal, tax_percent, discount, total_amount,
-      payment_status, amount_paid, balance_due, warranty_info, technician_notes
-    ) VALUES (
-      ${inv.id}, ${inv.date}, ${inv.customerName}, ${inv.customerMobile}, ${inv.customerAddress || null},
-      ${inv.deviceType}, ${inv.deviceBrand}, ${inv.deviceModel}, ${inv.deviceImei}, ${inv.deviceIssues},
-      ${inv.deviceAccessories}, ${JSON.stringify(inv.items)}, ${inv.subtotal}, ${inv.taxPercent}, ${inv.discount},
-      ${inv.totalAmount}, ${inv.paymentStatus}, ${inv.amountPaid}, ${inv.balanceDue}, ${inv.warrantyInfo},
-      ${inv.technicianNotes || null}
-    )
-    RETURNING *
-  `;
+  const newInvoice = {
+    id: inv.id,
+    date: inv.date,
+    customer_name: inv.customerName,
+    customer_mobile: inv.customerMobile,
+    customer_address: inv.customerAddress || null,
+    device_type: inv.deviceType,
+    device_brand: inv.deviceBrand,
+    device_model: inv.deviceModel,
+    device_imei: inv.deviceImei,
+    device_issues: inv.deviceIssues,
+    device_accessories: inv.deviceAccessories,
+    items: JSON.stringify(inv.items), // Convert object/array to JSON string for JSONB column handling if needed, or driver handles it?
+    // neon driver usually handles object -> JSONB automatically if column is JSONB. 
+    // Let's pass object directly.
+    // Wait, inv.items is array.
+    subtotal: inv.subtotal,
+    tax_percent: inv.taxPercent,
+    discount: inv.discount,
+    total_amount: inv.totalAmount,
+    payment_status: inv.paymentStatus,
+    amount_paid: inv.amountPaid,
+    balance_due: inv.balanceDue,
+    warranty_info: inv.warrantyInfo,
+    technician_notes: inv.technicianNotes || null,
+    created_at: new Date().toISOString()
+  };
 
-    res.status(201).json({ success: true, data: result[0] });
+  // Note: items column in schema is JSONB. Pass raw array/object.
+  await sql`
+        INSERT INTO invoices (
+            id, date, customer_name, customer_mobile, customer_address, device_type, device_brand, device_model,
+            device_imei, device_issues, device_accessories, items, subtotal, tax_percent, discount, total_amount,
+            payment_status, amount_paid, balance_due, warranty_info, technician_notes, created_at
+        ) VALUES (
+            ${newInvoice.id}, ${newInvoice.date}, ${newInvoice.customer_name}, ${newInvoice.customer_mobile},
+            ${newInvoice.customer_address}, ${newInvoice.device_type}, ${newInvoice.device_brand},
+            ${newInvoice.device_model}, ${newInvoice.device_imei}, ${newInvoice.device_issues},
+            ${newInvoice.device_accessories}, ${inv.items}::jsonb, ${newInvoice.subtotal}, ${newInvoice.tax_percent},
+            ${newInvoice.discount}, ${newInvoice.total_amount}, ${newInvoice.payment_status}, ${newInvoice.amount_paid},
+            ${newInvoice.balance_due}, ${newInvoice.warranty_info}, ${newInvoice.technician_notes}, ${newInvoice.created_at}
+        )
+    `;
+
+  res.status(201).json({ success: true, data: { ...newInvoice, items: inv.items } });
 }));
 
 // PUT /api/invoices/:id
 router.put('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-    const inv = req.body;
+  const { id } = req.params;
+  const inv = req.body;
 
-    const result = await sql`
-    UPDATE invoices SET
-      date = ${inv.date}, customer_name = ${inv.customerName}, customer_mobile = ${inv.customerMobile},
-      customer_address = ${inv.customerAddress || null}, device_type = ${inv.deviceType}, device_brand = ${inv.deviceBrand},
-      device_model = ${inv.deviceModel}, device_imei = ${inv.deviceImei}, device_issues = ${inv.deviceIssues},
-      device_accessories = ${inv.deviceAccessories}, items = ${JSON.stringify(inv.items)}, subtotal = ${inv.subtotal},
-      tax_percent = ${inv.taxPercent}, discount = ${inv.discount}, total_amount = ${inv.totalAmount},
-      payment_status = ${inv.paymentStatus}, amount_paid = ${inv.amountPaid}, balance_due = ${inv.balanceDue},
-      warranty_info = ${inv.warrantyInfo}, technician_notes = ${inv.technicianNotes || null}
-    WHERE id = ${id}
-    RETURNING *
-  `;
+  const invoices = await sql`SELECT * FROM invoices WHERE id = ${id}`;
 
-    if (result.length === 0) {
-        return res.status(404).json({ success: false, error: 'Invoice not found' });
-    }
-    res.json({ success: true, data: result[0] });
+  if (invoices.length === 0) {
+    return res.status(404).json({ success: false, error: 'Invoice not found' });
+  }
+
+  const updatedInvoice = await sql`
+        UPDATE invoices
+        SET date = ${inv.date}, customer_name = ${inv.customerName}, customer_mobile = ${inv.customerMobile},
+            customer_address = ${inv.customerAddress || null}, device_type = ${inv.deviceType},
+            device_brand = ${inv.deviceBrand}, device_model = ${inv.deviceModel}, device_imei = ${inv.deviceImei},
+            device_issues = ${inv.deviceIssues}, device_accessories = ${inv.deviceAccessories},
+            items = ${inv.items}::jsonb, subtotal = ${inv.subtotal}, tax_percent = ${inv.taxPercent},
+            discount = ${inv.discount}, total_amount = ${inv.totalAmount}, payment_status = ${inv.paymentStatus},
+            amount_paid = ${inv.amountPaid}, balance_due = ${inv.balanceDue}, warranty_info = ${inv.warrantyInfo},
+            technician_notes = ${inv.technicianNotes || null}
+        WHERE id = ${id}
+        RETURNING *
+    `;
+
+  res.json({ success: true, data: updatedInvoice[0] });
 }));
 
 // DELETE /api/invoices/:id
 router.delete('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-    const result = await sql`DELETE FROM invoices WHERE id = ${id} RETURNING id`;
+  const { id } = req.params;
+  const result = await sql`DELETE FROM invoices WHERE id = ${id} RETURNING id`;
 
-    if (result.length === 0) {
-        return res.status(404).json({ success: false, error: 'Invoice not found' });
-    }
-    res.json({ success: true, message: 'Invoice deleted' });
+  if (result.length === 0) {
+    return res.status(404).json({ success: false, error: 'Invoice not found' });
+  }
+  res.json({ success: true, message: 'Invoice deleted' });
 }));
 
 export default router;

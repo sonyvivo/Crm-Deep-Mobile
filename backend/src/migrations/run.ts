@@ -6,20 +6,24 @@ dotenv.config();
 const sql = neon(process.env.DATABASE_URL!);
 
 async function runMigrations() {
-    try {
-        console.log('🔄 Running database migrations...');
+  try {
+    console.log('🔄 Running database migrations...');
 
-        // Create users table
-        await sql`CREATE TABLE IF NOT EXISTS users (
+    // Create users table
+    await sql`CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(100) UNIQUE NOT NULL,
       password_hash VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created users table');
+    console.log('✅ Created users table');
 
-        // Create customers table
-        await sql`CREATE TABLE IF NOT EXISTS customers (
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS pin VARCHAR(255)`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS recovery_key_hash VARCHAR(255)`;
+    console.log('✅ Updated users table with extra columns');
+
+    // Create customers table
+    await sql`CREATE TABLE IF NOT EXISTS customers (
       id VARCHAR(50) PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       mobile VARCHAR(20),
@@ -27,18 +31,18 @@ async function runMigrations() {
       notes TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created customers table');
+    console.log('✅ Created customers table');
 
-        // Create suppliers table
-        await sql`CREATE TABLE IF NOT EXISTS suppliers (
+    // Create suppliers table
+    await sql`CREATE TABLE IF NOT EXISTS suppliers (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) UNIQUE NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created suppliers table');
+    console.log('✅ Created suppliers table');
 
-        // Create purchases table
-        await sql`CREATE TABLE IF NOT EXISTS purchases (
+    // Create purchases table
+    await sql`CREATE TABLE IF NOT EXISTS purchases (
       id VARCHAR(50) PRIMARY KEY,
       date VARCHAR(50) NOT NULL,
       supplier VARCHAR(255),
@@ -51,10 +55,10 @@ async function runMigrations() {
       notes TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created purchases table');
+    console.log('✅ Created purchases table');
 
-        // Create sales table
-        await sql`CREATE TABLE IF NOT EXISTS sales (
+    // Create sales table
+    await sql`CREATE TABLE IF NOT EXISTS sales (
       id VARCHAR(50) PRIMARY KEY,
       date VARCHAR(50) NOT NULL,
       customer VARCHAR(255),
@@ -73,10 +77,10 @@ async function runMigrations() {
       pending_amount DECIMAL(10, 2) DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created sales table');
+    console.log('✅ Created sales table');
 
-        // Create expenses table
-        await sql`CREATE TABLE IF NOT EXISTS expenses (
+    // Create expenses table
+    await sql`CREATE TABLE IF NOT EXISTS expenses (
       id VARCHAR(50) PRIMARY KEY,
       date VARCHAR(50) NOT NULL,
       category VARCHAR(100),
@@ -89,10 +93,10 @@ async function runMigrations() {
       notes TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created expenses table');
+    console.log('✅ Created expenses table');
 
-        // Create job_sheets table
-        await sql`CREATE TABLE IF NOT EXISTS job_sheets (
+    // Create job_sheets table
+    await sql`CREATE TABLE IF NOT EXISTS job_sheets (
       id VARCHAR(50) PRIMARY KEY,
       date VARCHAR(50) NOT NULL,
       status VARCHAR(50) NOT NULL,
@@ -123,10 +127,10 @@ async function runMigrations() {
       created_at VARCHAR(50),
       updated_at VARCHAR(50)
     )`;
-        console.log('✅ Created job_sheets table');
+    console.log('✅ Created job_sheets table');
 
-        // Create invoices table
-        await sql`CREATE TABLE IF NOT EXISTS invoices (
+    // Create invoices table
+    await sql`CREATE TABLE IF NOT EXISTS invoices (
       id VARCHAR(50) PRIMARY KEY,
       date VARCHAR(50) NOT NULL,
       customer_name VARCHAR(255) NOT NULL,
@@ -150,23 +154,23 @@ async function runMigrations() {
       technician_notes TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`;
-        console.log('✅ Created invoices table');
+    console.log('✅ Created invoices table');
 
-        // Create indexes
-        await sql`CREATE INDEX IF NOT EXISTS idx_customers_mobile ON customers(mobile)`;
-        await sql`CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date)`;
-        await sql`CREATE INDEX IF NOT EXISTS idx_job_sheets_status ON job_sheets(status)`;
-        console.log('✅ Created indexes');
+    // Create indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_customers_mobile ON customers(mobile)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_job_sheets_status ON job_sheets(status)`;
+    console.log('✅ Created indexes');
 
-        console.log('\n✅ All migrations completed successfully!');
-        console.log('\n📌 Next step: Register your first admin user by calling:');
-        console.log('   POST http://localhost:3000/api/auth/register');
-        console.log('   with {"username": "your-username", "password": "your-password"}');
+    console.log('\n✅ All migrations completed successfully!');
+    console.log('\n📌 Next step: Register your first admin user by calling:');
+    console.log('   POST http://localhost:3000/api/auth/register');
+    console.log('   with {"username": "your-username", "password": "your-password"}');
 
-    } catch (error) {
-        console.error('❌ Migration failed:', error);
-        process.exit(1);
-    }
+  } catch (error) {
+    console.error('❌ Migration failed:', error);
+    process.exit(1);
+  }
 }
 
 runMigrations();

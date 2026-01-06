@@ -44,18 +44,18 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.username, this.password).subscribe({
-      next: (success) => {
+      next: (result) => {
         this.isLoading = false;
-        if (success) {
+        if (result.success) {
           this.router.navigate(['/dashboard']);
         } else {
-          this.errorMessage = 'Invalid Username or Password';
+          this.errorMessage = result.error || 'Invalid Username or Password';
           this.password = '';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Connection error. Please try again.';
+        this.errorMessage = 'Unexpected error occurred.';
         console.error('Login error:', err);
       }
     });
