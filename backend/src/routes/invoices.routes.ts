@@ -26,52 +26,55 @@ router.get('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
 // POST /api/invoices
 router.post('/', asyncHandler(async (req: AuthRequest, res: Response) => {
   const inv = req.body;
+  console.log('📝 Creating Invoice:', inv.id);
 
-  const newInvoice = {
-    id: inv.id,
-    date: inv.date,
-    customer_name: inv.customerName,
-    customer_mobile: inv.customerMobile,
-    customer_address: inv.customerAddress || null,
-    device_type: inv.deviceType,
-    device_brand: inv.deviceBrand,
-    device_model: inv.deviceModel,
-    device_imei: inv.deviceImei,
-    device_issues: inv.deviceIssues,
-    device_accessories: inv.deviceAccessories,
-    items: JSON.stringify(inv.items), // Convert object/array to JSON string for JSONB column handling if needed, or driver handles it?
-    // neon driver usually handles object -> JSONB automatically if column is JSONB. 
-    // Let's pass object directly.
-    // Wait, inv.items is array.
-    subtotal: inv.subtotal,
-    tax_percent: inv.taxPercent,
-    discount: inv.discount,
-    total_amount: inv.totalAmount,
-    payment_status: inv.paymentStatus,
-    amount_paid: inv.amountPaid,
-    balance_due: inv.balanceDue,
-    warranty_info: inv.warrantyInfo,
-    technician_notes: inv.technicianNotes || null,
-    created_at: new Date().toISOString()
-  };
+  try {
+    const newInvoice = {
+      id: inv.id,
+      date: inv.date,
+      customer_name: inv.customerName,
+      customer_mobile: inv.customerMobile,
+      customer_address: inv.customerAddress || null,
+      device_type: inv.deviceType || '',
+      device_brand: inv.deviceBrand || '',
+      device_model: inv.deviceModel || '',
+      device_imei: inv.deviceImei || '',
+      device_issues: inv.deviceIssues || '',
+      device_accessories: inv.deviceAccessories || '',
+      items: JSON.stringify(inv.items || []),
+      subtotal: inv.subtotal || 0,
+      tax_percent: inv.taxPercent || 0,
+      discount: inv.discount || 0,
+      total_amount: inv.totalAmount || 0,
+      payment_status: inv.paymentStatus || 'Cash',
+      amount_paid: inv.amountPaid || 0,
+      balance_due: inv.balanceDue || 0,
+      warranty_info: inv.warrantyInfo || '',
+      technician_notes: inv.technicianNotes || null,
+      created_at: new Date().toISOString()
+    };
 
-  // Note: items column in schema is JSONB. Pass raw array/object.
-  await sql`
-        INSERT INTO invoices (
-            id, date, customer_name, customer_mobile, customer_address, device_type, device_brand, device_model,
-            device_imei, device_issues, device_accessories, items, subtotal, tax_percent, discount, total_amount,
-            payment_status, amount_paid, balance_due, warranty_info, technician_notes, created_at
-        ) VALUES (
-            ${newInvoice.id}, ${newInvoice.date}, ${newInvoice.customer_name}, ${newInvoice.customer_mobile},
-            ${newInvoice.customer_address}, ${newInvoice.device_type}, ${newInvoice.device_brand},
-            ${newInvoice.device_model}, ${newInvoice.device_imei}, ${newInvoice.device_issues},
-            ${newInvoice.device_accessories}, ${inv.items}::jsonb, ${newInvoice.subtotal}, ${newInvoice.tax_percent},
-            ${newInvoice.discount}, ${newInvoice.total_amount}, ${newInvoice.payment_status}, ${newInvoice.amount_paid},
-            ${newInvoice.balance_due}, ${newInvoice.warranty_info}, ${newInvoice.technician_notes}, ${newInvoice.created_at}
-        )
-    `;
+    await sql`
+          INSERT INTO invoices (
+              id, date, customer_name, customer_mobile, customer_address, device_type, device_brand, device_model,
+              device_imei, device_issues, device_accessories, items, subtotal, tax_percent, discount, total_amount,
+              payment_status, amount_paid, balance_due, warranty_info, technician_notes, created_at
+          ) VALUES (
+              ${newInvoice.id}, ${newInvoice.date}, ${newInvoice.customer_name}, ${newInvoice.customer_mobile},
+              ${newInvoice.customer_address}, ${newInvoice.device_type}, ${newInvoice.device_brand},
+              ${newInvoice.device_model}, ${newInvoice.device_imei}, ${newInvoice.device_issues},
+              ${newInvoice.device_accessories}, ${inv.items || []}::jsonb, ${newInvoice.subtotal}, ${newInvoice.tax_percent},
+              ${newInvoice.discount}, ${newInvoice.total_amount}, ${newInvoice.payment_status}, ${newInvoice.amount_paid},
+              ${newInvoice.balance_due}, ${newInvoice.warranty_info}, ${newInvoice.technician_notes}, ${newInvoice.created_at}
+          )
+      `;
 
-  res.status(201).json({ success: true, data: { ...newInvoice, items: inv.items } });
+    console.log('✅ Invoice Created:', inv.id);
+    res.status(201).json({ success: true, data: { ...newInvoice, items: inv.items } });
+  } catch (error: any) {
+    console.error('❌ Error creating invoice:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to save invoice' });
+  }
 }));
 
 // PUT /api/invoices/:id

@@ -422,24 +422,34 @@ export class DataService {
 
   async addInvoice(inv: Invoice) {
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/invoices`, inv));
-      this.invoicesSubject.next([inv, ...this.invoicesSubject.value]);
+      const response = await firstValueFrom(this.http.post<ApiResponse<Invoice>>(`${this.apiUrl}/invoices`, inv));
+      if (response && response.success) {
+        this.invoicesSubject.next([inv, ...this.invoicesSubject.value]);
+      } else {
+        throw new Error(response?.error || 'Failed to add invoice');
+      }
     } catch (error) {
       console.error('Failed to add invoice:', error);
+      throw error;
     }
   }
 
   async updateInvoice(inv: Invoice) {
     try {
-      await firstValueFrom(this.http.put(`${this.apiUrl}/invoices/${inv.id}`, inv));
-      const current = this.invoicesSubject.value;
-      const index = current.findIndex(x => x.id === inv.id);
-      if (index !== -1) {
-        current[index] = inv;
-        this.invoicesSubject.next([...current]);
+      const response = await firstValueFrom(this.http.put<ApiResponse<Invoice>>(`${this.apiUrl}/invoices/${inv.id}`, inv));
+      if (response && response.success) {
+        const current = this.invoicesSubject.value;
+        const index = current.findIndex(x => x.id === inv.id);
+        if (index !== -1) {
+          current[index] = inv;
+          this.invoicesSubject.next([...current]);
+        }
+      } else {
+        throw new Error(response?.error || 'Failed to update invoice');
       }
     } catch (error) {
       console.error('Failed to update invoice:', error);
+      throw error;
     }
   }
 

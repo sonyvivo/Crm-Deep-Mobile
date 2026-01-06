@@ -276,7 +276,7 @@ export class BillingComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveInvoice() {
+  async saveInvoice() {
     if (this.currentInvoice.customerMobile && !/^\d{10}$/.test(this.currentInvoice.customerMobile)) {
       alert('Mobile Number must be 10 digits.');
       return;
@@ -287,18 +287,23 @@ export class BillingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Check if existing ID - handled by data service logic usually, 
-    // but here we manually set ID. If ID exists in list, update.
-    const exists = this.invoices.find(i => i.id === this.currentInvoice.id);
-    if (exists) {
-      this.dataService.updateInvoice(this.currentInvoice);
-    } else {
-      this.dataService.addInvoice(this.currentInvoice);
-    }
+    try {
+      // Check if existing ID - handled by data service logic usually, 
+      // but here we manually set ID. If ID exists in list, update.
+      const exists = this.invoices.find(i => i.id === this.currentInvoice.id);
+      if (exists) {
+        await this.dataService.updateInvoice(this.currentInvoice);
+      } else {
+        await this.dataService.addInvoice(this.currentInvoice);
+      }
 
-    alert('Invoice Saved Successfully!');
-    this.setView('list');
-    this.resetForm();
+      alert('Invoice Saved Successfully!');
+      this.setView('list');
+      this.resetForm();
+    } catch (e: any) {
+      console.error('Error saving invoice', e);
+      alert('Error saving invoice: ' + (e.message || e));
+    }
   }
 
   deleteInvoice(id: string) {
