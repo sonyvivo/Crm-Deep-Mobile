@@ -21,6 +21,7 @@
     "@angular/router": "^17.3.0",
     "chart.js": "^4.5.1",
     "google-one-tap": "^1.0.6",
+    "html2pdf.js": "^0.12.1",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
     "rxjs": "~7.8.0",

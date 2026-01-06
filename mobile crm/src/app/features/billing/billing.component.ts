@@ -8,6 +8,7 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
 import { DEVICE_BRANDS, MOBILE_MODELS, REPAIR_PROBLEMS, SPARE_PARTS } from '../../core/constants/mobile-data';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-billing',
@@ -408,15 +409,39 @@ export class BillingComponent implements OnInit, OnDestroy {
         await this.dataService.addInvoice(this.currentInvoice);
       }
 
-      // Switch to preview mode
+      // Switch to preview mode first
       this.setView('preview');
 
-      // Wait a moment then open WhatsApp
-      setTimeout(() => {
-        this.shareOnWhatsApp(this.currentInvoice);
+      // Wait for view to render
+      setTimeout(async () => {
+        try {
+          // Generate and download PDF
+          const element = document.getElementById('invoicePreview');
+          if (element) {
+            const opt = {
+              margin: 10,
+              filename: `Invoice_${this.currentInvoice.id}.pdf`,
+              image: { type: 'jpeg' as const, quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true },
+              jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+            };
+
+            await html2pdf().set(opt).from(element).save();
+
+            // Wait a bit then open WhatsApp
+            setTimeout(() => {
+              this.shareOnWhatsApp(this.currentInvoice);
+              alert('PDF downloaded! Opening WhatsApp... Please attach the downloaded PDF to your message.');
+            }, 1000);
+          }
+        } catch (pdfError) {
+          console.error('Error generating PDF:', pdfError);
+          // Still open WhatsApp even if PDF fails
+          this.shareOnWhatsApp(this.currentInvoice);
+          alert('Invoice saved! Opening WhatsApp... (PDF generation failed, but you can still send the message)');
+        }
       }, 500);
 
-      alert('Invoice Saved! Opening WhatsApp... You can print the invoice from this page.');
     } catch (e: any) {
       console.error('Error saving invoice', e);
       alert('Error saving invoice: ' + (e.message || e));
