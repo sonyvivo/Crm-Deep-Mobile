@@ -94,11 +94,24 @@ export class BillingComponent implements OnInit, OnDestroy {
     this.sub.add(this.route.queryParams.subscribe(params => {
       if (params['action'] === 'new') {
         this.openNewInvoice();
-        // Clear the query param after handling
+        // Handle customer data for quick action from Customers page or Job Sheets
+        if (params['customerName'] || params['customerMobile']) {
+          this.currentInvoice.customerName = params['customerName'] || '';
+          this.currentInvoice.customerMobile = params['customerMobile'] || '';
+          this.currentInvoice.customerAddress = params['customerAddress'] || '';
+        }
+        // Handle device data from Job Sheets
+        if (params['deviceBrand'] || params['deviceModel']) {
+          this.currentInvoice.deviceBrand = params['deviceBrand'] || '';
+          this.currentInvoice.deviceModel = params['deviceModel'] || '';
+          this.currentInvoice.deviceImei = params['deviceImei'] || '';
+          this.currentInvoice.deviceIssues = params['deviceIssues'] || '';
+        }
+        // Clear the query params after handling
         this.router.navigate([], { queryParams: {}, replaceUrl: true });
       }
-      // Handle customer data for quick action from Customers page
-      if (params['customerName'] || params['customerMobile']) {
+      // Handle customer data for quick action from Customers page (legacy)
+      if (!params['action'] && (params['customerName'] || params['customerMobile'])) {
         this.openNewInvoice();
         this.currentInvoice.customerName = params['customerName'] || '';
         this.currentInvoice.customerMobile = params['customerMobile'] || '';

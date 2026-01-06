@@ -410,6 +410,31 @@ export class JobSheetsComponent implements OnInit, OnDestroy {
     window.open(url, '_blank');
   }
 
+  // Navigate to Billing with job sheet data pre-filled
+  createInvoiceFromJob(job: JobSheet) {
+    // Handle array of faults
+    let faults = '';
+    if (Array.isArray(job.faultCategory)) {
+      faults = job.faultCategory.join(', ');
+    } else {
+      faults = job.faultCategory || '';
+    }
+
+    this.router.navigate(['/billing'], {
+      queryParams: {
+        action: 'new',
+        customerName: job.customerName,
+        customerMobile: job.customerMobile,
+        customerAddress: job.customerAddress || '',
+        deviceBrand: job.deviceBrand,
+        deviceModel: job.deviceModel,
+        deviceImei: job.imei || '',
+        deviceIssues: faults,
+        jobSheetId: job.id
+      }
+    });
+  }
+
   // --- Filtering ---
   applyFilters() {
     this.filteredJobs = this.jobSheets.filter(j => {
